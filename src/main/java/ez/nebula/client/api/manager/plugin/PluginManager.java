@@ -93,7 +93,7 @@ public final class PluginManager implements ITypedManager<Plugin>
                     register(plugin); // register before init so we can unload
                     LOGGER.info("Initializing plugin \"{}\"", plugin.getName());
                     plugin.init();
-                    return; // only one Plugin class per plugin
+                    break; // only one Plugin class per plugin
                 }
             } catch (final IOException | InvocationTargetException | IllegalAccessException | InstantiationException e)
             {
