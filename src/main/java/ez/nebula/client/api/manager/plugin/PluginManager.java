@@ -81,6 +81,7 @@ public final class PluginManager implements ITypedManager<Plugin>
                     LOGGER.warn("No classes loaded for {}", file.getName());
                     return;
                 }
+                boolean foundPlugin = false;
                 for (final Class<?> clazz : classes)
                 {
                     if (!Plugin.class.isAssignableFrom(clazz))
@@ -93,7 +94,12 @@ public final class PluginManager implements ITypedManager<Plugin>
                     register(plugin); // register before init so we can unload
                     LOGGER.info("Initializing plugin \"{}\"", plugin.getName());
                     plugin.init();
+                    foundPlugin = true;
                     break; // only one Plugin class per plugin
+                }
+                if (!foundPlugin)
+                {
+                    LOGGER.warn("{} did not contain a class extending ez.nebula.client.api.manager.Plugin", file.getName());
                 }
             } catch (final IOException | InvocationTargetException | IllegalAccessException | InstantiationException e)
             {
