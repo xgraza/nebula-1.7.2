@@ -16,6 +16,7 @@ import ez.nebula.client.api.player.movement.MovementController;
 import ez.nebula.client.api.player.server.InventoryManager;
 import ez.nebula.client.api.player.server.RotationManager;
 import ez.nebula.client.api.player.server.ServerManager;
+import ez.nebula.client.api.manager.plugin.PluginManager;
 import ez.nebula.client.api.tray.SystemNotifications;
 import ez.nebula.client.impl.gui.startup.LoadingScreen;
 import ez.nebula.client.util.render.RenderUtil;
@@ -98,6 +99,7 @@ public final class Nebula
     public static final WaypointManager WAYPOINTS = new WaypointManager();
     public static final InteractionManager INTERACTIONS = new InteractionManager();
     public static final MovementController MOVEMENT_CONTROLLER = new MovementController();
+    public static final PluginManager PLUGINS = new PluginManager();
 
     /**
      * Initializes nebula client
@@ -132,13 +134,6 @@ public final class Nebula
         SystemNotifications.init();
         Schematica.load();
 
-        endTime = System.nanoTime();
-        LOGGER.info("Initialized Nebula Client in {}ms", (endTime - startTime) / 1000000.0);
-
-        LoadingScreen.setStage(4, "Loading configs");
-        CONFIGS.init();
-
-        LoadingScreen.setStage(5, "Initializing render features");
         try
         {
             RenderUtil.initShaders();
@@ -146,6 +141,15 @@ public final class Nebula
         {
             LOGGER.error("Failed to initialize shaders!", e);
         }
+
+        endTime = System.nanoTime();
+        LOGGER.info("Initialized Nebula Client in {}ms", (endTime - startTime) / 1000000.0);
+
+        LoadingScreen.setStage(4, "Loading configs");
+        CONFIGS.init();
+
+        LoadingScreen.setStage(5, "Loading plugins");
+        PLUGINS.init();
 
         LoadingScreen.setStage(6, "Post-initialization");
         setIcon();

@@ -176,7 +176,7 @@ public final class ModuleManager implements ITypedManager<Module>
         LOGGER.info("Registered {} modules", moduleInstanceList.size());
     }
 
-    private void register(final Module module)
+    public void register(final Module module)
     {
         if (module.getClass().isAnnotationPresent(DebugFeature.class) && !Nebula.DEBUG)
         {

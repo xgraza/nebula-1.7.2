@@ -3,6 +3,7 @@ package ez.nebula.client.api.manager.module.type;
 import ez.nebula.client.Nebula;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
+import ez.nebula.client.util.minecraft.player.ChatUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.world.BlockInfo;
 import ez.nebula.client.util.minecraft.world.BlockUtil;
@@ -43,6 +44,7 @@ public abstract class InteractionModule extends RotationModule
         final ItemStack stack = Nebula.INVENTORY.stack();
         if (stack == null)
         {
+            ChatUtil.sendNebula("null");
             PacketUtil.send(new C08PacketPlayerBlockPlacement(null));
             MC.entityRenderer.itemRenderer.resetEquippedProgress();
             return;
