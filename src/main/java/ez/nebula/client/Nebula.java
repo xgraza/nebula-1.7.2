@@ -107,6 +107,7 @@ public final class Nebula
      */
     public static void init(final File gameDir)
     {
+        System.out.println();
         logBuildInfo();
 
         LoadingScreen.setTotalLoadingStages(12);

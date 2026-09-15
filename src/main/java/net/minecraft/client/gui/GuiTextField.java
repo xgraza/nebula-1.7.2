@@ -106,7 +106,7 @@ public class GuiTextField extends Gui
         }
 
         this.text = var2;
-        System.out.println(var2);
+        // System.out.println(var2);
         this.func_146182_d(var4 - this.cursorPosition + length);
     }
 
