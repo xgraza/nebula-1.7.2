@@ -27,7 +27,6 @@ public abstract class JSONConfig<T extends JsonElement> implements IConfig
         {
             throw new RuntimeException("Could not gather type");
         }
-        System.out.println(this.type);
     }
 
     @Override
