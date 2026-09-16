@@ -92,6 +92,7 @@ public final class ModuleManager implements ITypedManager<Module>
         register(new AntiBlockModule());
         register(new AntiDisconnectModule());
         register(new AntiLagModule());
+        register(new AntiPortalModule());
         register(new AntiRevertModule());
         register(new AutoEatModule());
         register(new AutoRapeModule());
