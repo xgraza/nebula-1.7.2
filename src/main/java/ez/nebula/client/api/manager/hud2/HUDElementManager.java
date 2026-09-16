@@ -58,6 +58,7 @@ public final class HUDElementManager implements ITypedManager<HUDElement>
     public void init()
     {
         register(new ArmorHUDElement());
+        register(new CoordinatesHUDElement());
         register(new FPSHUDElement());
         register(new HealthHUDElement());
         register(new SpeedHUDElement());
