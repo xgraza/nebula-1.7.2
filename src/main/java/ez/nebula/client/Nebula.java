@@ -146,11 +146,11 @@ public final class Nebula
         endTime = System.nanoTime();
         LOGGER.info("Initialized Nebula Client in {}ms", (endTime - startTime) / 1000000.0);
 
-        LoadingScreen.setStage(4, "Loading configs");
-        CONFIGS.init();
-
-        LoadingScreen.setStage(5, "Loading plugins");
+        LoadingScreen.setStage(4, "Loading plugins");
         PLUGINS.init();
+
+        LoadingScreen.setStage(5, "Loading configs");
+        CONFIGS.init();
 
         LoadingScreen.setStage(6, "Post-initialization");
         setIcon();
