@@ -27,21 +27,26 @@ public final class HUDManager implements ITypedManager<HUDElement>
         EventBus.subscribe(this);
         Nebula.CONFIGS.register(new HUDConfig(this));
 
-        hudElementList.add(new ArmorStatusHUDElement());
-        hudElementList.add(new ArraylistHUDElement());
-        hudElementList.add(new CoordinatesHUDElement());
-        hudElementList.add(new FPSHUDElement());
-        hudElementList.add(new PotionStatusHUDElement());
-        hudElementList.add(new ServerStatusHUDElement());
-        hudElementList.add(new SpeedHUDElement());
-        hudElementList.add(new TargetDisplayHUDElement());
-        hudElementList.add(new TPSHUDElement());
-        hudElementList.add(new WatermarkHUDElement());
+        register(new ArmorStatusHUDElement());
+        register(new ArraylistHUDElement());
+        register(new CoordinatesHUDElement());
+        register(new FPSHUDElement());
+        register(new PotionStatusHUDElement());
+        register(new ServerStatusHUDElement());
+        register(new SpeedHUDElement());
+        register(new TargetDisplayHUDElement());
+        register(new TPSHUDElement());
+        register(new WatermarkHUDElement());
 
         LOGGER.info("Registered {} HUD elements", hudElementList.size());
 
         hudElementList.forEach(HUDElement::discoverSettings);
         hudElementList.forEach(HUDElement::init);
+    }
+    
+    public void register(final HUDElement element)
+    {
+        hudElementList.add(element);
     }
 
     @Override

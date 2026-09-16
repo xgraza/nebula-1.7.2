@@ -57,22 +57,24 @@ public final class HUDElementManager implements ITypedManager<HUDElement>
     @Override
     public void init()
     {
-        elementList.add(new ArmorHUDElement());
-        elementList.add(new FPSHUDElement());
-        elementList.add(new HealthHUDElement());
-        elementList.add(new SpeedHUDElement());
-        elementList.add(new TPSHUDElement());
-        elementList.add(new WatermarkHUDElement());
+        register(new ArmorHUDElement());
+        register(new FPSHUDElement());
+        register(new HealthHUDElement());
+        register(new SpeedHUDElement());
+        register(new TPSHUDElement());
+        register(new WatermarkHUDElement());
 
         LOGGER.info("Registered {} HUD elements!", elementList.size());
 
-        for (final HUDElement element : elementList)
-        {
-            element.discoverSettings();
-        }
+        elementList.forEach(HUDElement::discoverSettings);
 
         Nebula.CONFIGS.register(config);
         EventBus.subscribe(this); // automatic scaling
+    }
+    
+    public void register(final HUDElement element)
+    {
+        elementList.add(element);
     }
 
     @Override
