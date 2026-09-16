@@ -84,6 +84,7 @@ public final class ModuleManager implements ITypedManager<Module>
         register(new NoMoveDelayModule());
         register(new NoSlowModule());
         register(new PathFinderModule());
+        register(new ReverseStepModule());
         register(new SafeWalkModule());
         register(new SpeedModule());
         register(new SprintModule());
