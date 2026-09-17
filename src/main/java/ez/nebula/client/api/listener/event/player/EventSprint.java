@@ -2,11 +2,17 @@ package ez.nebula.client.api.listener.event.player;
 
 import ez.nebula.client.api.listener.Event;
 
-/**
- * @author xgraza
- * @since 02/17/25
- */
-public final class EventSprint extends Event
+public class EventSprint extends Event
 {
+    private boolean sprinting;
 
+    public void setSprinting(boolean sprinting)
+    {
+        this.sprinting = sprinting;
+    }
+
+    public boolean isSprinting()
+    {
+        return sprinting;
+    }
 }

@@ -1,10 +1,7 @@
 package net.minecraft.client.entity;
 
 import ez.nebula.client.api.listener.EventBus;
-import ez.nebula.client.api.listener.event.player.EventItemSlowdown;
-import ez.nebula.client.api.listener.event.player.EventPushFromBlocks;
-import ez.nebula.client.api.listener.event.player.EventSneak;
-import ez.nebula.client.api.listener.event.player.EventSprint;
+import ez.nebula.client.api.listener.event.player.*;
 import ez.nebula.client.impl.module.exploit.PortalsModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -190,11 +187,14 @@ public class EntityPlayerSP extends AbstractClientPlayer
             phased = b1 || b2 || b3 || b4;
             boolean var4 = (float) this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
-            final boolean overrideSprint = EventBus.dispatch(new EventSprint());
+            final boolean omniSprint = EventBus.dispatch(new EventOmniSprint());
+            final EventSprint event = new EventSprint();
+            final boolean overrideSprint = EventBus.dispatch(event);
+            final boolean keyDown = overrideSprint ? event.isSprinting() : mc.gameSettings.keyBindSprint.getIsKeyPressed();
 
-            if (this.onGround && ((!var3 && this.movementInput.moveForward >= var2) || overrideSprint) && !this.isSprinting() && var4 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness))
+            if (this.onGround && ((!var3 && this.movementInput.moveForward >= var2) || omniSprint) && !this.isSprinting() && var4 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness))
             {
-                if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.getIsKeyPressed())
+                if (this.sprintToggleTimer <= 0 && !keyDown)
                 {
                     this.sprintToggleTimer = 7;
                 } else
@@ -203,12 +203,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 }
             }
 
-            if (!this.isSprinting() && (this.movementInput.moveForward >= var2 || overrideSprint) && var4 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness) && this.mc.gameSettings.keyBindSprint.getIsKeyPressed())
+            if (!this.isSprinting() && (this.movementInput.moveForward >= var2 || omniSprint) && var4 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness) && keyDown)
             {
                 this.setSprinting(true);
             }
 
-            if (this.isSprinting() && ((this.movementInput.moveForward < var2 && !overrideSprint) || this.isCollidedHorizontally || !var4))
+            if (this.isSprinting() && ((this.movementInput.moveForward < var2 && !omniSprint) || this.isCollidedHorizontally || !var4 || (overrideSprint && !keyDown)))
             {
                 this.setSprinting(false);
             }

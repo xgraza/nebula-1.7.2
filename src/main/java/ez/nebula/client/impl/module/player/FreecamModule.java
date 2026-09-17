@@ -22,7 +22,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.util.MovementInputFromOptions;
+import net.minecraft.util.MovementInput;
 import net.minecraft.world.World;
 
 /**
@@ -121,15 +121,6 @@ public final class FreecamModule extends Module
     };
 
     @Subscribe
-    private final EventListener<EventUpdateInput.Post> postUpdateInputEventListener = event ->
-    {
-        if (playerEntity != null && event.getInput().equals(playerEntity.getInput()))
-        {
-            event.setModifySneaking(false);
-        }
-    };
-
-    @Subscribe
     private final EventListener<EventRotateCamera> rotateCameraEventListener = event ->
     {
         if (playerEntity != null && event.getEntity().equals(MC.thePlayer))
@@ -178,7 +169,7 @@ public final class FreecamModule extends Module
 
     private static final class CameraPlayerEntity extends EntityOtherPlayerMP
     {
-        private final MovementInputFromOptions input;
+        private final MovementInput input;
 
         public CameraPlayerEntity(final World world, final EntityPlayer player)
         {
@@ -189,18 +180,16 @@ public final class FreecamModule extends Module
             setInvisible(true);
             setLocationAndAngles(player.posX, player.boundingBox.minY, player.posZ, player.rotationYaw, player.rotationPitch);
             inventory.copyInventory(player.inventory);
-            input = new MovementInputFromOptions(MC.gameSettings);
+            input = new MovementInput();
         }
 
         @Override
         public void onLivingUpdate()
         {
             super.onLivingUpdate();
-            input.updatePlayerMoveState();
+            updateInputStates();
             updateEntityActionState();
             noClip = true;
-            moveForward = input.moveForward;
-            moveStrafing = input.moveStrafe;
 
             if (input.jump)
             {
@@ -213,7 +202,7 @@ public final class FreecamModule extends Module
                 motionY = 0.0;
             }
 
-            if (moveForward != 0.0f || moveStrafing != 0.0f)
+            if (input.moveForward != 0.0f || input.moveStrafe != 0.0f)
             {
                 final double[] motion = MoveUtil.getStrafeMotion(
                         MoveUtil.getDirectionRadians(this, rotationYaw),
@@ -229,9 +218,36 @@ public final class FreecamModule extends Module
             moveEntity(motionX, motionY, motionZ);
         }
 
-        public MovementInputFromOptions getInput()
+        private void updateInputStates()
         {
-            return input;
+            input.moveStrafe = 0.0F;
+            input.moveForward = 0.0F;
+
+            if (MC.gameSettings.keyBindForward.getIsKeyPressed())
+            {
+                ++input.moveForward;
+            }
+
+            if (MC.gameSettings.keyBindBack.getIsKeyPressed())
+            {
+                --input.moveForward;
+            }
+
+            if (MC.gameSettings.keyBindLeft.getIsKeyPressed())
+            {
+                ++input.moveStrafe;
+            }
+
+            if (MC.gameSettings.keyBindRight.getIsKeyPressed())
+            {
+                --input.moveStrafe;
+            }
+
+            input.jump = MC.gameSettings.keyBindJump.getIsKeyPressed();
+            input.sneak = MC.gameSettings.keyBindSneak.getIsKeyPressed();
+
+            moveForward = input.moveForward;
+            moveStrafing = input.moveStrafe;
         }
     }
 }

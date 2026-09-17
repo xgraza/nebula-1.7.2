@@ -2,7 +2,9 @@ package net.minecraft.entity;
 
 import ez.nebula.client.api.listener.EventBus;
 import ez.nebula.client.api.listener.event.input.EventRotateCamera;
+import ez.nebula.client.api.listener.event.player.EventInWeb;
 import ez.nebula.client.api.listener.event.player.EventSafeWalk;
+import ez.nebula.client.api.listener.event.player.EventSprint;
 import ez.nebula.client.api.listener.event.player.EventStep;
 import ez.nebula.client.impl.module.player.FreecamModule;
 import net.minecraft.block.Block;
@@ -665,12 +667,15 @@ public abstract class Entity
             if (this.isInWeb)
             {
                 this.isInWeb = false;
-                par1 *= 0.25D;
-                par3 *= 0.05000000074505806D;
-                par5 *= 0.25D;
-                this.motionX = 0.0D;
-                this.motionY = 0.0D;
-                this.motionZ = 0.0D;
+                if (!EventBus.dispatch(new EventInWeb(this)))
+                {
+                    par1 *= 0.25D;
+                    par3 *= 0.05000000074505806D;
+                    par5 *= 0.25D;
+                    this.motionX = 0.0D;
+                    this.motionY = 0.0D;
+                    this.motionZ = 0.0D;
+                }
             }
 
             double var13 = par1;

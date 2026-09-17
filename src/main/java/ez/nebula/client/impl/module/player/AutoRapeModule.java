@@ -3,6 +3,7 @@ package ez.nebula.client.impl.module.player;
 import ez.nebula.client.api.listener.EventListener;
 import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.game.EventUpdate;
+import ez.nebula.client.api.listener.event.input.EventUpdateInput;
 import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
@@ -39,18 +40,24 @@ public final class AutoRapeModule extends Module
             .build();
 
     private final Timer timer = new Timer();
-    private boolean override;
+    private boolean override, sneaking;
 
     @Override
     public void onDisable()
     {
         super.onDisable();
-        if (MC.thePlayer != null && override)
-        {
-            MC.gameSettings.keyBindSneak.pressed = false;
-        }
         override = false;
+        sneaking = false;
     }
+
+    @Subscribe
+    private final EventListener<EventUpdateInput.Post> postEventListener = event ->
+    {
+        if (override)
+        {
+            event.getInput().sneak = sneaking;
+        }
+    };
 
     @Subscribe
     private final EventListener<EventUpdate> updateEventListener = event ->
@@ -81,7 +88,7 @@ public final class AutoRapeModule extends Module
         {
             if (override)
             {
-                MC.gameSettings.keyBindSneak.pressed = false;
+                sneaking = false;
             }
             override = false;
             return;
@@ -93,7 +100,7 @@ public final class AutoRapeModule extends Module
         {
             if (override)
             {
-                MC.gameSettings.keyBindSneak.pressed = false;
+                sneaking = false;
             }
             override = false;
             return;
@@ -102,7 +109,7 @@ public final class AutoRapeModule extends Module
         if (timer.hasElapsed(1000L / strokesSetting.getValue(), true))
         {
             override = true;
-            MC.gameSettings.keyBindSneak.pressed = !MC.gameSettings.keyBindSneak.pressed;
+            sneaking = !sneaking;
         }
     };
 }

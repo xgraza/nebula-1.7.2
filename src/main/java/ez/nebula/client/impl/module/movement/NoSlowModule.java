@@ -1,9 +1,9 @@
 package ez.nebula.client.impl.module.movement;
 
 import ez.nebula.client.api.listener.EventListener;
+import ez.nebula.client.api.listener.IEventPriorities;
 import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.game.EventPostUpdate;
-import ez.nebula.client.api.listener.event.game.EventUpdate;
 import ez.nebula.client.api.listener.event.player.*;
 import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
@@ -37,14 +37,13 @@ public final class NoSlowModule extends Module
             .setDescription("If to prevent water slowdowns")
             .build();
 
-    private boolean bypass, inWeb;
+    private boolean bypass;
 
     @Override
     public void onDisable()
     {
         super.onDisable();
         bypass = false;
-        inWeb = false;
     }
 
     @Subscribe
@@ -59,26 +58,6 @@ public final class NoSlowModule extends Module
     };
 
     @Subscribe
-    private final EventListener<EventUpdate> updateEventListener = event ->
-    {
-        if (websSetting.getValue())
-        {
-            inWeb = MC.thePlayer.isInWeb;
-            MC.thePlayer.isInWeb = false;
-        }
-    };
-
-    @Subscribe
-    private final EventListener<EventMove> moveEventListener = event ->
-    {
-        if (inWeb)
-        {
-            // Entity#moveEntity
-            event.setY(event.getY() * 0.05000000074505806D);
-        }
-    };
-
-    @Subscribe
     private final EventListener<EventPostUpdate> postUpdateEventListener = event ->
     {
         if (bypass)
@@ -87,6 +66,20 @@ public final class NoSlowModule extends Module
             PacketUtil.send(new C08PacketPlayerBlockPlacement(
                     -1, -1, -1, 255,
                     MC.thePlayer.getHeldItem(), 0.0F, 0.0F, 0.0F));
+        }
+    };
+
+    @Subscribe
+    private final EventListener<EventInWeb> updateEventListener = event ->
+            event.setCanceled(websSetting.getValue() && event.getEntity().equals(MC.thePlayer));
+
+    @Subscribe(priority = IEventPriorities.HIGHEST)
+    private final EventListener<EventSprint> sprintEventListener = event ->
+    {
+        if (websSetting.getValue() && MC.thePlayer.isInWeb)
+        {
+            event.setSprinting(false);
+            event.cancel();
         }
     };
 
