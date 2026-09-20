@@ -1,5 +1,6 @@
 package ez.nebula.client.impl.module.render;
 
+import ez.nebula.client.Nebula;
 import ez.nebula.client.api.listener.EventListener;
 import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.render.EventRender3D;
@@ -148,8 +149,9 @@ public final class TrajectoriesModule extends Module
         double y = player.prevPosY + (player.posY - player.prevPosY) * partialTicks;
         double z = player.prevPosZ + (player.posZ - player.prevPosZ) * partialTicks;
 
-        final float yaw = MC.thePlayer.rotationYaw;
-        final float pitch = MC.thePlayer.rotationPitch;
+        final float[] angles = Nebula.ROTATIONS.getServerAngles();
+        final float yaw = angles[0];
+        final float pitch = angles[1];
 
         x -= Math.cos(yaw / 180.0f * Math.PI) * 0.16f;
         y += player.getEyeHeight() - 0.10000000149011612D;
