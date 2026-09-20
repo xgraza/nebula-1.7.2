@@ -4,10 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.src.Config;
-import net.minecraft.src.HttpPipeline;
-import net.minecraft.src.HttpRequest;
-import net.minecraft.src.HttpResponse;
+import net.minecraft.src.*;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -142,25 +139,25 @@ public class ThreadDownloadImageData extends SimpleTexture
             this.imageThread.setName("Skin downloader: " + this.imageUrl);
             this.imageThread.start();
 
-//            try
-//            {
-//                URL e = new URL(this.imageUrl);
-//                String path = e.getPath();
-//                String prefixSkin = "/MinecraftSkins/";
-//                String prefixCape = "/MinecraftCloaks/";
-//
-//                if (path.startsWith(prefixCape))
-//                {
-//                    String file = path.substring(prefixCape.length());
-//                    String ofUrl = "http://s.optifine.net/capes/" + file;
-//                    ThreadDownloadImage t = new ThreadDownloadImage(this, ofUrl, new ImageBufferDownload());
-//                    t.setDaemon(true);
-//                    t.setName("Cape downloader: " + this.imageUrl);
-//                    t.start();
-//                }
-//            } catch (Exception var9)
-//            {
-//            }
+            try
+            {
+                URL e = new URL(this.imageUrl);
+                String path = e.getPath();
+                String prefixSkin = "/MinecraftSkins/";
+                String prefixCape = "/MinecraftCloaks/";
+
+                if (path.startsWith(prefixCape))
+                {
+                    String file = path.substring(prefixCape.length());
+                    String ofUrl = "http://s.optifine.net/capes/" + file;
+                    ThreadDownloadImage t = new ThreadDownloadImage(this, ofUrl, new ImageBufferDownload());
+                    t.setDaemon(true);
+                    t.setName("Cape downloader: " + this.imageUrl);
+                    t.start();
+                }
+            } catch (Exception var9)
+            {
+            }
         }
     }
 
