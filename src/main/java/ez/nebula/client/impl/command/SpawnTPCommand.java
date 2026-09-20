@@ -16,7 +16,7 @@ public final class SpawnTPCommand extends Command
     {
         literal.executes((ctx) ->
         {
-            PacketUtil.send(new C03PacketPlayer.C04PacketPlayerPosition(
+            PacketUtil.sendInstant(new C03PacketPlayer.C04PacketPlayerPosition(
                     Double.NaN, Double.NaN, Double.NaN, Double.NaN, false));
             return ctx.getSource().respond("Sent invalid packet");
         });
