@@ -12,7 +12,7 @@ import ez.nebula.client.api.manager.module.ModuleManager;
 import ez.nebula.client.api.manager.toast.ToastManager;
 import ez.nebula.client.api.manager.waypoint.WaypointManager;
 import ez.nebula.client.api.player.InteractionManager;
-import ez.nebula.client.api.player.movement.MovementController;
+import ez.nebula.client.api.player.movement.MovementManager;
 import ez.nebula.client.api.player.server.InventoryManager;
 import ez.nebula.client.api.player.server.RotationManager;
 import ez.nebula.client.api.player.server.ServerManager;
@@ -98,7 +98,7 @@ public final class Nebula
     public static final ServerManager SERVER = new ServerManager();
     public static final WaypointManager WAYPOINTS = new WaypointManager();
     public static final InteractionManager INTERACTIONS = new InteractionManager();
-    public static final MovementController MOVEMENT_CONTROLLER = new MovementController();
+    public static final MovementManager MOVEMENT = new MovementManager();
     public static final PluginManager PLUGINS = new PluginManager();
 
     /**
@@ -132,6 +132,7 @@ public final class Nebula
         TOASTS.init();
         FRIENDS.init();
         WAYPOINTS.init();
+        MOVEMENT.init();
         SystemNotifications.init();
         Schematica.load();
 

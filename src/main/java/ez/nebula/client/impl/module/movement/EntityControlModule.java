@@ -3,10 +3,10 @@ package ez.nebula.client.impl.module.movement;
 import ez.nebula.client.api.listener.EventListener;
 import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.game.EventUpdate;
-import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
+import ez.nebula.client.api.manager.module.type.InteractionModule;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.util.math.Timer;
 import net.minecraft.entity.Entity;
@@ -18,7 +18,7 @@ import net.minecraft.entity.Entity;
 @ModuleManifest(name = "EntityControl",
         description = "Attempts to force control a riding entity",
         category = ModuleCategory.MOVEMENT)
-public final class EntityControlModule extends Module
+public final class EntityControlModule extends InteractionModule
 {
     @ModuleInstance
     public static EntityControlModule INSTANCE;
@@ -50,7 +50,7 @@ public final class EntityControlModule extends Module
         {
             if (lastRidingEntity != null && MC.thePlayer.ridingEntity == null && mountTimer.hasElapsed(500L, true))
             {
-                MC.playerController.interactWithEntitySendPacket(MC.thePlayer, lastRidingEntity);
+                interact(lastRidingEntity);
             }
         }
         if (MC.thePlayer.ridingEntity != null)

@@ -97,6 +97,7 @@ public abstract class InteractionModule extends RotationModule
     protected void interact(final Entity entity)
     {
         PacketUtil.send(new C02PacketUseEntity(entity, C02PacketUseEntity.Action.INTERACT));
+        MC.thePlayer.interactWith(entity);
     }
 
     protected void attack(final Entity entity, final boolean packet)

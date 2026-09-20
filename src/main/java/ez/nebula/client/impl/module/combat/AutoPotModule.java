@@ -282,7 +282,7 @@ public final class AutoPotModule extends InteractionModule
         angles[0] = MC.thePlayer.rotationYaw;
         angles[1] = 90.0f;
 
-        final double speed = MoveUtil.getPlayerSpeed();
+        final double speed = Nebula.MOVEMENT.getMotionSpeed();
         if (speed > 1.0E-4)
         {
             angles[0] = (float) Math.toDegrees(Math.atan2(-MC.thePlayer.motionX, MC.thePlayer.motionZ));

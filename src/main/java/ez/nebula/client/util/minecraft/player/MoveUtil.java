@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.Vec3;
 
 /**
  * @author xgraza
@@ -89,6 +90,26 @@ public final class MoveUtil
     public static float getDirectionRadians(final EntityPlayer player, final float yaw)
     {
         return getDirectionYaw(player, yaw) * 0.017453292f;
+    }
+
+    public static float[] getXZMoveToVec(final Vec3 vector)
+    {
+        final Vec3 normalized = Vec3.createVectorHelper(vector.xCoord - MC.thePlayer.posX,
+                vector.yCoord - MC.thePlayer.boundingBox.minY,
+                vector.zCoord - MC.thePlayer.posZ).normalize();
+
+        final double yaw = MC.thePlayer.rotationYaw * (Math.PI / 180.0f);
+        double forward = normalized.dotProduct(Vec3.createVectorHelper(-Math.sin(yaw), 0, Math.cos(yaw)));
+        double strafe = normalized.dotProduct(Vec3.createVectorHelper(Math.cos(yaw), 0, Math.sin(yaw)));
+
+        final double length = Math.sqrt(forward + forward * strafe * strafe);
+        if (length > 1.0)
+        {
+            forward /= length;
+            strafe /= length;
+        }
+
+        return new float[]{ (float) forward, (float) strafe };
     }
 
     public static double getBaseNcpSpeed(final int minPotionTime)

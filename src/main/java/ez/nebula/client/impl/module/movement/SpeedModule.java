@@ -1,5 +1,6 @@
 package ez.nebula.client.impl.module.movement;
 
+import ez.nebula.client.Nebula;
 import ez.nebula.client.api.listener.EventListener;
 import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.game.EventUpdate;
@@ -239,7 +240,7 @@ public final class SpeedModule extends Module
 
     @Subscribe
     private final EventListener<EventMoveUpdate> moveUpdateEventListener = event ->
-            tickMoveSpeed = MoveUtil.getPlayerMoveDistance();
+            tickMoveSpeed = Nebula.MOVEMENT.getMoveSpeed();
 
     @Subscribe(receiveCanceled = true)
     private final EventListener<EventPacket.Inbound> inboundEventListener = event ->

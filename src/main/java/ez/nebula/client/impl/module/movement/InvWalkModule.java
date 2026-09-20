@@ -16,6 +16,7 @@ import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,12 +38,13 @@ public final class InvWalkModule extends Module
             GuiEditSign.class,
             GuiScreenBook.class,
             GuiRepair.class);
-
-    private final KeyBinding[] moveKeyBindings = new KeyBinding[6];
+    private static final int MOUSE_KEY_OFFSET = 100;
 
     private final Setting<Boolean> allowBlacklistedGUIsSetting = builder("Allow Blacklisted GUIs", false)
             .setDescription("If to allow movement in all GUIs regardless of their issues")
             .build();
+
+    private final KeyBinding[] moveKeyBindings = new KeyBinding[6];
 
     @Override
     public void onEnable()
@@ -56,6 +58,18 @@ public final class InvWalkModule extends Module
         moveKeyBindings[5] = MC.gameSettings.keyBindSprint;
     }
 
+    @Override
+    public void onDisable()
+    {
+        super.onDisable();
+
+        Arrays.fill(moveKeyBindings, null);
+        if (MC.currentScreen != null)
+        {
+            MC.currentScreen.allowUserInput = false;
+        }
+    }
+
     @Subscribe
     private final EventListener<EventUpdate> updateEventListener = event ->
     {
@@ -63,18 +77,13 @@ public final class InvWalkModule extends Module
         {
             return;
         }
+        MC.currentScreen.allowUserInput = true;
         for (final KeyBinding keyBinding : moveKeyBindings)
         {
             final int keyCode = keyBinding.getKeyCode();
-            boolean keyState;
-            if (keyCode < -100)
-            {
-                keyState = Mouse.isButtonDown(keyCode - 100);
-            } else
-            {
-                keyState = Keyboard.isKeyDown(keyCode);
-            }
-            keyBinding.pressed = keyState;
+            keyBinding.pressed = keyCode < -MOUSE_KEY_OFFSET
+                    ? Mouse.isButtonDown(keyCode - MOUSE_KEY_OFFSET)
+                    : Keyboard.isKeyDown(keyCode);
         }
     };
 

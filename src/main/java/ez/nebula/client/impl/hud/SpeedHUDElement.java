@@ -1,9 +1,9 @@
 package ez.nebula.client.impl.hud;
 
+import ez.nebula.client.Nebula;
 import ez.nebula.client.api.manager.hud.HUDElement;
 import ez.nebula.client.api.manager.hud.trait.HUDManifest;
 import ez.nebula.client.impl.module.render.HUDModule;
-import ez.nebula.client.util.minecraft.player.MoveUtil;
 import ez.nebula.client.util.render.font.Fonts;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.EnumChatFormatting;
@@ -27,7 +27,7 @@ public final class SpeedHUDElement extends HUDElement
     @Override
     public void render(final ScaledResolution res)
     {
-        final double moveDelta = MoveUtil.getPlayerMoveDistance();
+        final double moveDelta = Nebula.MOVEMENT.getMoveSpeed();
         double speed = (moveDelta / 1000) / (0.05 / 3600);
         speed *= MC.timer.timerSpeed;
         speed /= 3.6;
