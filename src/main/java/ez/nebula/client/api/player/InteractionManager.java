@@ -8,6 +8,7 @@ import ez.nebula.client.api.listener.event.player.EventSneak;
 import ez.nebula.client.impl.module.player.NoSwingModule;
 import ez.nebula.client.impl.module.world.PacketMineModule;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
+import ez.nebula.client.util.minecraft.player.ChatUtil;
 import ez.nebula.client.util.minecraft.world.BlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -58,8 +59,8 @@ public final class InteractionManager
         MC.rightClickDelayTimer = 4;
 
         final boolean sneakPacket = sneak
-                && BlockUtil.INTERACTABLE_BLOCK_LIST.contains(MC.theWorld.getBlock(pos))
-                && !MC.thePlayer.serverSneaking;
+                && BlockUtil.INTERACTABLE_BLOCK_LIST.contains(MC.theWorld.getBlock(pos));
+                //&& !MC.thePlayer.serverSneaking;
         overrideSneak = sneaking = sneakPacket;
         if (sneakPacket)
         {
