@@ -65,6 +65,10 @@ public final class SpeedModule extends Module
             .setDescription("If to stop using Physics Calc when an AntiCheat setback is received")
             .setVisibility((value) -> modeSetting.getValue() == Mode.PHYSICS_CALC)
             .build();
+    private final Setting<Boolean> protectionSetting = builder("Protection", false)
+            .setDescription("IF to stop using Physics Calc when you are in danger of dying from hunger")
+            .setVisibility((value) -> modeSetting.getValue() == Mode.PHYSICS_CALC)
+            .build();
 
     private final NumberSetting<Double> vanillaSpeedSetting = numberBuilder("Speed", 0.3)
             .setMin(0.1)
@@ -230,6 +234,10 @@ public final class SpeedModule extends Module
         if (modeSetting.getValue() == Mode.PHYSICS_CALC)
         {
             if (--ticksSinceSetback > 0 && handleSetbackSetting.getValue())
+            {
+                return;
+            }
+            if (protectionSetting.getValue() && MC.thePlayer.getFoodStats().getFoodLevel() <= 2)
             {
                 return;
             }
