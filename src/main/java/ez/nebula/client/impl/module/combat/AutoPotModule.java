@@ -17,7 +17,6 @@ import ez.nebula.client.impl.module.ModuleRotationPriorities;
 import ez.nebula.client.impl.module.player.AutoEatModule;
 import ez.nebula.client.util.math.Timer;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
-import ez.nebula.client.util.minecraft.player.MoveUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
@@ -287,9 +286,6 @@ public final class AutoPotModule extends InteractionModule
         {
             angles[0] = (float) Math.toDegrees(Math.atan2(-MC.thePlayer.motionX, MC.thePlayer.motionZ));
             angles[1] -= (float) (speed * 250);
-        } else
-        {
-            angles[1] = -90.0f;
         }
 
         if (Math.abs(MC.thePlayer.motionY) > 1.0E-4)
