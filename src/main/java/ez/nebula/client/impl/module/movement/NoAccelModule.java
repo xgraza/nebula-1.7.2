@@ -29,7 +29,7 @@ public final class NoAccelModule extends Module
         {
             if (!movingSetting.getValue()
                     || !MC.thePlayer.onGround
-                    || MC.gameSettings.keyBindJump.pressed
+                    || MC.gameSettings.keyBindJump.getIsKeyPressed()
                     || SpeedModule.INSTANCE.isToggled())
             {
                 return;

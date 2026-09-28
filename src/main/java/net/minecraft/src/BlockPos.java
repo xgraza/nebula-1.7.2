@@ -51,9 +51,9 @@ public class BlockPos
         {
             return this;
         }
-        return new BlockPos(x + (facing.getFaceX() * n),
-                y + (facing.getFaceY() * n),
-                z + (facing.getFaceZ() * n));
+        return new BlockPos(x + (facing.getFrontOffsetX() * n),
+                y + (facing.getFrontOffsetY() * n),
+                z + (facing.getFrontOffsetZ() * n));
     }
 
     public BlockPos add(final int x, final int y, final int z)

@@ -8,11 +8,11 @@ import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
-import ez.nebula.client.api.nws.NWS;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.player.FreecamModule;
 import ez.nebula.client.util.io.NetworkUtil;
+import ez.nebula.client.util.minecraft.player.ChatUtil;
 import ez.nebula.client.util.minecraft.player.EntityUtil;
 import ez.nebula.client.util.render.font.Fonts;
 import ez.nebula.client.util.render.gui.Render2D;
@@ -53,7 +53,7 @@ public final class NametagsModule extends Module
     private static final ItemStack FAKE_G_HORSE_ARMOR_STACK = new ItemStack(Items.golden_horse_armor, 1);
     private static final ItemStack FAKE_D_HORSE_ARMOR_STACK = new ItemStack(Items.diamond_horse_armor, 1);
     private static final ResourceLocation NEBULA_ICON_LOCATION = new ResourceLocation(
-            "nebula", "texture/icon/128x.png");
+            "assets/nebula", "texture/icon/128x.png");
     private static final int ITEM_RENDER_SIZE = 16;
 
     private final Setting<Boolean> backgroundSetting = builder("Background", false)
@@ -92,8 +92,13 @@ public final class NametagsModule extends Module
     {
         MC.mcProfiler.startSection("nametags");
         frustrum.setPosition(MC.renderViewEntity.posX, MC.renderViewEntity.posY, MC.renderViewEntity.posZ);
-        for (final Entity entity : MC.theWorld.loadedEntityList)
+        for (final Object o : MC.theWorld.loadedEntityList)
         {
+            if (!(o instanceof Entity))
+            {
+                continue;
+            }
+            final Entity entity = (Entity)o;
             if (entity.getEntityId() == FreecamModule.CAMERA_ENTITY_ID
                     || (entity == MC.renderViewEntity && MC.gameSettings.thirdPersonView == 0))
             {
@@ -177,10 +182,10 @@ public final class NametagsModule extends Module
                     MC.fontRenderer.drawStringWithShadow(text, (int) -textWidth, -textHeight, -1);
                 }
 
-                if (entity.equals(MC.thePlayer) || NWS.INSTANCE.isNebulaUser(entity.getCommandSenderName()))
-                {
-                    Render2D.texture(NEBULA_ICON_LOCATION, -(textWidth + textHeight + 1), -textHeight, textHeight, textHeight);
-                }
+//                if (entity.equals(MC.thePlayer) || NWS.INSTANCE.isNebulaUser(entity.getCommandSenderName()))
+//                {
+//                    Render2D.texture(NEBULA_ICON_LOCATION, -(textWidth + textHeight + 1), -textHeight, textHeight, textHeight);
+//                }
 
                 glEnable(GL_DEPTH_TEST);
 
@@ -360,7 +365,7 @@ public final class NametagsModule extends Module
 
             if (Nebula.FRIENDS.has(player) || player == MC.thePlayer)
             {
-                builder.append(EnumChatFormatting.NEBULA_CLIENT_COLOR);
+                builder.append(ChatUtil.NEBULA_CLIENT_COLOR);
             }
             if (player.isSneaking())
             {

@@ -15,6 +15,7 @@ import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.api.setting.block.BlockSetting;
 import ez.nebula.client.impl.module.player.FreecamModule;
 import ez.nebula.client.impl.module.render.HUDModule;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
 import ez.nebula.client.util.math.MathUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
@@ -89,7 +90,7 @@ public final class AutoTrapModule extends InteractionModule
         final ColorSetting color = HUDModule.INSTANCE.primaryColorSetting;
         for (final BlockPos pos : placementList)
         {
-            final AxisAlignedBB bb = new AxisAlignedBB(pos);
+            final AxisAlignedBB bb = IAxisAlignedBB.create(pos);
             Render3D.filledAABB(bb, QuadMask.ALL_FACES, color.getValueInt(80));
             Render3D.outlinedAABB(bb, 1.5f, QuadMask.ALL_FACES, color.getValueInt());
         }
@@ -105,10 +106,10 @@ public final class AutoTrapModule extends InteractionModule
         if (event.getPacket() instanceof S23PacketBlockChange && instantSetting.getValue())
         {
             final S23PacketBlockChange packet = event.getPacket();
-            final BlockPos pos = new BlockPos(packet.getX(), packet.getY(), packet.getZ());
+            final BlockPos pos = new BlockPos(packet.func_148879_d(), packet.func_148878_e(), packet.func_148877_f());
             if (placementList.contains(pos))
             {
-                if (!packet.getType().getMaterial().isReplaceable())
+                if (!packet.func_148880_c().getMaterial().isReplaceable())
                 {
                     return;
                 }
@@ -118,7 +119,7 @@ public final class AutoTrapModule extends InteractionModule
                     Nebula.INVENTORY.sync();
                     return;
                 }
-                MC.theWorld.setBlock(pos.getX(), pos.getY(), pos.getZ(), packet.getType());
+                MC.theWorld.setBlock(pos.getX(), pos.getY(), pos.getZ(), packet.func_148880_c());
                 final BlockInfo info = BlockUtil.getPlacement(pos);
                 if (info == null)
                 {
@@ -163,16 +164,17 @@ public final class AutoTrapModule extends InteractionModule
         placeMultiPos(blocksSetting.getValue(), slot, false, placementList);
     };
 
+    @SuppressWarnings("unchecked")
     private EntityPlayer getTarget()
     {
-        return MC.theWorld.playerEntities.stream()
+        return (EntityPlayer) MC.theWorld.playerEntities.stream()
                 .filter((player) -> !player.equals(MC.thePlayer)
-                        && !player.isDead
-                        && player.getHealth() > 0.0f
-                        && player.getEntityId() != FreecamModule.CAMERA_ENTITY_ID
-                        && player.getDistanceToEntity(MC.thePlayer) <= rangeSetting.getValue()
-                        && (NoFriendsModule.INSTANCE.isToggled() || !Nebula.FRIENDS.has(player)))
-                .min(Comparator.comparingDouble((player) -> MC.thePlayer.getDistanceToEntity(player)))
+                        && !((EntityPlayer)player).isDead
+                        && ((EntityPlayer)player).getHealth() > 0.0f
+                        && ((EntityPlayer)player).getEntityId() != FreecamModule.CAMERA_ENTITY_ID
+                        && ((EntityPlayer)player).getDistanceToEntity(MC.thePlayer) <= rangeSetting.getValue()
+                        && (NoFriendsModule.INSTANCE.isToggled() || !Nebula.FRIENDS.has(((EntityPlayer)player))))
+                .min(Comparator.comparingDouble((player) -> MC.thePlayer.getDistanceToEntity(((EntityPlayer)player))))
                 .orElse(null);
     }
 
@@ -195,7 +197,7 @@ public final class AutoTrapModule extends InteractionModule
                     continue;
                 }
 
-                if (player.boundingBox.intersectsWith(new AxisAlignedBB(neighbor)))
+                if (player.boundingBox.intersectsWith(IAxisAlignedBB.create(neighbor)))
                 {
                     if (exploredSet.add(neighbor))
                     {

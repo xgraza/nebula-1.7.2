@@ -28,7 +28,7 @@ public final class WTapModule extends Module
         {
             final C02PacketUseEntity packet = event.getPacket();
             final Entity entity = packet.func_149564_a(MC.theWorld);
-            if (packet.getAction() != C02PacketUseEntity.Action.ATTACK || !(entity instanceof EntityLivingBase))
+            if (packet.func_149565_c() != C02PacketUseEntity.Action.ATTACK || !(entity instanceof EntityLivingBase))
             {
                 return;
             }

@@ -1,9 +1,10 @@
 package ez.nebula.client.api.player.pathfinding.processor;
 
+import ez.nebula.client.api.player.pathfinding.Pathfinder;
 import ez.nebula.client.api.player.pathfinding.node.NodeContext;
 import ez.nebula.client.api.player.pathfinding.node.NodeCosts;
-import ez.nebula.client.api.player.pathfinding.Pathfinder;
 import ez.nebula.client.impl.module.movement.JesusModule;
+import ez.nebula.client.mixin.duck.IWorld;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBasePressurePlate;
 import net.minecraft.block.material.Material;
@@ -63,7 +64,7 @@ public interface IProcessor extends NodeCosts
         for (final int[] offsets : Pathfinder.BASIC_SURROUNDING_OFFSETS)
         {
             final BlockPos neighbor = pos.add(offsets[0], offsets[1], offsets[2]);
-            final Block neighboringBlock = MC.theWorld.getBlock(neighbor);
+            final Block neighboringBlock = ((IWorld)MC.theWorld).nebula$getBlock(neighbor);
 
             if (neighboringBlock == Blocks.cactus)
             {

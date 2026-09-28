@@ -16,6 +16,8 @@ import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IEntityLivingBase;
+import ez.nebula.client.mixin.duck.INetHandlerPlayClient;
 import ez.nebula.client.util.minecraft.player.MoveUtil;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.entity.Entity;
@@ -81,7 +83,7 @@ public final class FreecamModule extends Module
             return;
         }
 
-        if (!MC.getNetHandler().doneLoadingTerrain)
+        if (!((INetHandlerPlayClient)MC.getNetHandler()).nebula$getDoneLoadingTerrain())
         {
             return;
         }
@@ -127,7 +129,7 @@ public final class FreecamModule extends Module
         {
             event.cancel();
             playerEntity.setAngles(event.getDiffYaw(), event.getDiffPitch());
-            playerEntity.renderPitch = playerEntity.rotationPitch;
+            ((IEntityLivingBase)(Object)playerEntity).nebula$setRenderPitch(playerEntity.rotationPitch);
             playerEntity.rotationYawHead = playerEntity.rotationYaw;
         }
     };

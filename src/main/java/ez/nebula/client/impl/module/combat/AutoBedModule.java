@@ -17,6 +17,7 @@ import ez.nebula.client.impl.module.ModuleRotationPriorities;
 import ez.nebula.client.impl.module.player.AutoEatModule;
 import ez.nebula.client.impl.module.player.FreecamModule;
 import ez.nebula.client.impl.module.render.NameProtectModule;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
@@ -27,6 +28,7 @@ import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBed;
@@ -149,14 +151,14 @@ public final class AutoBedModule extends InteractionModule
             return;
         }
         MC.mcProfiler.startSection("autoBed");
-        final AxisAlignedBB bb = new AxisAlignedBB(blockInfo.getPos())
-                .addCoord(blockInfo.getFacing().getFaceX(),
-                        blockInfo.getFacing().getFaceY(),
-                        blockInfo.getFacing().getFaceZ());
+        final AxisAlignedBB bb = IAxisAlignedBB.create(blockInfo.getPos())
+                .addCoord(blockInfo.getFacing().getFrontOffsetX(),
+                        blockInfo.getFacing().getFrontOffsetY(),
+                        blockInfo.getFacing().getFrontOffsetZ());
         bb.maxY = blockInfo.getPos().getY() + 0.5;
         Render3D.outlinedAABB(bb, 1.5f, QuadMask.ALL_FACES, 0xFFFF0000);
         Render3D.filledAABB(bb, QuadMask.ALL_FACES, 0x80FF0000);
-        final Vec3 center = bb.getCenter();
+        final Vec3 center = ((IAxisAlignedBB)bb).nebula$getCenter();
         Render3D.billboard(center.xCoord, center.yCoord, center.zCoord, 0.2, () ->
         {
             final String text = String.format("%.2f", blockInfo.getTargetDamage());
@@ -245,7 +247,7 @@ public final class AutoBedModule extends InteractionModule
         {
             final S23PacketBlockChange packet = event.getPacket();
             final BlockPos placePos = blockInfo.getPos();
-            final BlockPos pos = new BlockPos(packet.getX(), packet.getY(), packet.getZ());
+            final BlockPos pos = new BlockPos(packet.func_148879_d(), packet.func_148878_e(), packet.func_148877_f());
             if (!placePos.equals(pos))
             {
                 return;
@@ -258,25 +260,25 @@ public final class AutoBedModule extends InteractionModule
                 return;
             }
 
-            if (packet.getType() instanceof BlockBed)
+            if (packet.func_148880_c() instanceof BlockBed)
             {
                 if (!packetBreakSetting.getValue())
                 {
                     return;
                 }
                 PacketUtil.send(new C08PacketPlayerBlockPlacement(
-                        packet.getX(), packet.getY(), packet.getZ(),
-                        EnumFacing.UP.order_a,
+                        packet.func_148879_d(), packet.func_148878_e(), packet.func_148877_f(),
+                        EnumFacing.UP.ordinal(),
                         null,
                         0.5f, 0.5f, 0.5f));
                 swing();
-            } else if (packet.getType() instanceof BlockAir)
+            } else if (packet.func_148880_c() instanceof BlockAir)
             {
                 if (!packetPlaceSetting.getValue())
                 {
                     return;
                 }
-                MC.theWorld.setBlockToAir(packet.getX(), packet.getY(), packet.getZ());
+                MC.theWorld.setBlockToAir(packet.func_148879_d(), packet.func_148878_e(), packet.func_148877_f());
                 tryPlaceBreakBed();
             }
         }
@@ -403,6 +405,7 @@ public final class AutoBedModule extends InteractionModule
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private EntityPlayer getPlayerInRange()
     {
         return (EntityPlayer) MC.theWorld.loadedEntityList
@@ -410,7 +413,7 @@ public final class AutoBedModule extends InteractionModule
                 .filter((entity) -> entity instanceof EntityPlayer
                         && isValidEntity((EntityLivingBase) entity))
                 .min(Comparator.comparingDouble((entity)
-                        -> entity.getDistanceToEntity(MC.thePlayer)))
+                        -> ((Entity)entity).getDistanceToEntity(MC.thePlayer)))
                 .orElse(null);
     }
 

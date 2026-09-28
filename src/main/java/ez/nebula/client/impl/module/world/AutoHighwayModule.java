@@ -15,6 +15,10 @@ import ez.nebula.client.api.setting.block.BlockSetting;
 import ez.nebula.client.impl.module.combat.AutoBedModule;
 import ez.nebula.client.impl.module.combat.KillAuraModule;
 import ez.nebula.client.impl.module.player.AutoEatModule;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IBlock;
+import ez.nebula.client.mixin.duck.IBlockSign;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
@@ -24,13 +28,11 @@ import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSign;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.src.BlockPos;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -118,7 +120,7 @@ public final class AutoHighwayModule extends InteractionModule
         {
             highwayPositionList.clear();
         }
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+        Nebula.INTERACTIONS.restore();
     }
 
     @Subscribe
@@ -129,9 +131,7 @@ public final class AutoHighwayModule extends InteractionModule
             return;
         }
         MC.mcProfiler.startSection("autoHighway");
-        final AxisAlignedBB aabb = new AxisAlignedBB(Vec3.createVectorHelper(
-                breakInfo.getPos().getX(), breakInfo.getPos().getY(), breakInfo.getPos().getZ()), 1);
-
+        final AxisAlignedBB aabb = IAxisAlignedBB.create(breakInfo.getPos());
         Render3D.filledAABB(aabb, QuadMask.mask(breakInfo.getFacing()), 0x80FF0000);
         Render3D.outlinedAABB(aabb, 1.5f, QuadMask.mask(breakInfo.getFacing()), 0xFFFF0000);
         MC.mcProfiler.endSection();
@@ -186,7 +186,7 @@ public final class AutoHighwayModule extends InteractionModule
                 breakInfo = null;
             }
             // nothing to break, give control back
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            Nebula.INTERACTIONS.restore();
             walk = false;
 
             Nebula.INVENTORY.sync();
@@ -233,9 +233,9 @@ public final class AutoHighwayModule extends InteractionModule
         final List<BlockInfo> posList = new LinkedList<>();
         for (final BlockPos highwayPos : highwayPosList)
         {
-            Block block = MC.theWorld.getBlock(highwayPos);
+            Block block = ((IWorld)MC.theWorld).nebula$getBlock(highwayPos);
             if (blockSetting.getBlock() != block
-                    && block.blockHardness != -1.0f
+                    && ((IBlock)block).nebula$getBlockHardness() != -1.0f
                     && !BlockUtil.isReplaceable(highwayPos)
                     && onlyBlockSetting.getValue())
             {
@@ -253,8 +253,8 @@ public final class AutoHighwayModule extends InteractionModule
                     continue;
                 }
                 final BlockPos pos = highwayPos.offset(EnumFacing.UP, y);
-                block = MC.theWorld.getBlock(pos);
-                if (!block.getMaterial().isReplaceable() && block.blockHardness != -1.0f)
+                block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
+                if (!block.getMaterial().isReplaceable() && ((IBlock)block).nebula$getBlockHardness() != -1.0f)
                 {
                     final BlockInfo info = getBreakInfo(pos, block);
                     if (info != null)
@@ -294,16 +294,16 @@ public final class AutoHighwayModule extends InteractionModule
                     continue;
                 }
                 final BlockPos neighbor = pos.offset(face);
-                final Block offsetBlock = MC.theWorld.getBlock(neighbor);
+                final Block offsetBlock = ((IWorld)MC.theWorld).nebula$getBlock(neighbor);
                 if (offsetBlock instanceof BlockSign)
                 {
                     // if the sign is a standing sign, and we have an up face
-                    if (((BlockSign) offsetBlock).field_149967_b && face == EnumFacing.UP)
+                    if (((IBlockSign) offsetBlock).nebula$isStanding() && face == EnumFacing.UP)
                     {
                         return null;
                     }
                     final int meta = MC.theWorld.getBlockMetadata(neighbor.getX(), neighbor.getY(), neighbor.getZ());
-                    if (meta >= 2 && meta <= 5 && face == EnumFacing.faceList[meta])
+                    if (meta >= 2 && meta <= 5 && face == EnumFacing.values()[meta])
                     {
                         return null;
                     }

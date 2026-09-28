@@ -11,6 +11,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.ColorSetting;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.util.minecraft.player.ChatUtil;
 import ez.nebula.client.util.render.gui.Render2D;
 import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
@@ -99,15 +100,20 @@ public final class LogoutSpotsModule extends Module
         if (event.getPacket() instanceof S38PacketPlayerListItem)
         {
             final S38PacketPlayerListItem packet = event.getPacket();
-            final String username = packet.getName();
+            final String username = packet.func_149122_c();
             if (MC.thePlayer != null && MC.thePlayer.getCommandSenderName().equals(username))
             {
                 return;
             }
             if (!packet.func_149121_d())
             {
-                for (final EntityPlayer player : MC.theWorld.playerEntities)
+                for (final Object o : MC.theWorld.playerEntities)
                 {
+                    if (!(o instanceof EntityPlayer))
+                    {
+                        continue;
+                    }
+                    final EntityPlayer player = (EntityPlayer)o;
                     if (player.getCommandSenderName().equals(username))
                     {
                         if (!logFriendsSetting.getValue() && Nebula.FRIENDS.has(player))

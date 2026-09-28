@@ -21,7 +21,7 @@ import net.minecraft.util.DamageSource;
 import org.lwjgl.input.Keyboard;
 
 /**
- * See {@link net.minecraft.entity.item.EntityEnderCrystal#attackEntityFrom(DamageSource, float)}
+ * See {@link EntityEnderCrystal#attackEntityFrom(DamageSource, float)}
  */
 @DebugFeature
 @ModuleManifest(name = "Test", category = ModuleCategory.PLAYER)
@@ -30,29 +30,29 @@ public final class TestModule extends Module
     @Subscribe
     private final EventListener<EventPacket.Inbound> inboundEventListener = event ->
     {
-        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement)
-        {
-            final C08PacketPlayerBlockPlacement packet = event.getPacket();
-            if (isCrystal(packet.getItemStack()) && packet.getSide() != 255)
-            {
-                final int x = packet.getPosX();
-                final int y = packet.getPosY();
-                final int z = packet.getPosZ();
-
-                // pre 1.13
-                if (!MC.theWorld.isAirBlock(x, y + 2, z))
-                {
-                    return;
-                }
-
-                final Block block = MC.theWorld.getBlock(x, y, z);
-                if (block != Blocks.obsidian && block != Blocks.bedrock)
-                {
-                    return;
-                }
-                MC.theWorld.spawnEntityInWorld(new EntityEnderCrystal(MC.theWorld, x + 0.5, y + 1, z + 0.5));
-            }
-        }
+//        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement)
+//        {
+//            final C08PacketPlayerBlockPlacement packet = event.getPacket();
+//            if (isCrystal(packet.func_149574_g()) && packet.getSide() != 255)
+//            {
+//                final int x = packet.getPosX();
+//                final int y = packet.getPosY();
+//                final int z = packet.getPosZ();
+//
+//                // pre 1.13
+//                if (!MC.theWorld.isAirBlock(x, y + 2, z))
+//                {
+//                    return;
+//                }
+//
+//                final Block block = MC.theWorld.getBlock(x, y, z);
+//                if (block != Blocks.obsidian && block != Blocks.bedrock)
+//                {
+//                    return;
+//                }
+//                MC.theWorld.spawnEntityInWorld(new EntityEnderCrystal(MC.theWorld, x + 0.5, y + 1, z + 0.5));
+//            }
+//        }
     };
 
     @Subscribe
@@ -64,7 +64,7 @@ public final class TestModule extends Module
             final ItemStack stack = new ItemStack(Items.spawn_egg, 1, 200);
             EntityItem var11 = MC.thePlayer.dropPlayerItemWithRandomChoice(stack, false);
             var11.delayBeforeCanPickup = 0;
-            var11.setOwner(MC.thePlayer.getCommandSenderName());
+            var11.func_145797_a(MC.thePlayer.getCommandSenderName());
         }
     };
 

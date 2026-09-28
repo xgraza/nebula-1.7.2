@@ -2,6 +2,7 @@ package ez.nebula.client.api.player.pathfinding.tasks;
 
 import ez.nebula.client.Nebula;
 import ez.nebula.client.api.player.pathfinding.node.Node;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.world.BlockInfo;
@@ -64,7 +65,7 @@ public final class MineTask extends Task
 
     private void swapToBestSlot(final BlockPos pos)
     {
-        final int slot = InventoryUtil.getBestToolSlotFor(MC.theWorld.getBlock(pos));
+        final int slot = InventoryUtil.getBestToolSlotFor(((IWorld)MC.theWorld).nebula$getBlock(pos));
         if (slot != -1)
         {
             Nebula.INVENTORY.spoof(slot);

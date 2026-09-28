@@ -50,8 +50,8 @@ public final class AutoPotModule extends InteractionModule
             Potion.resistance.getId(),
             Potion.fireResistance.getId(),
             Potion.waterBreathing.getId(),
-            Potion.healthBoost.getId(),
-            Potion.saturation.getId(),
+            Potion.field_76434_w.getId(),
+            Potion.field_76443_y.getId(),
             Potion.regeneration.getId());
 
     private final NumberSetting<Integer> delaySetting = numberBuilder("Delay", 400)
@@ -155,7 +155,7 @@ public final class AutoPotModule extends InteractionModule
         if (event.getPacket() instanceof S1DPacketEntityEffect && thrown && !expectedPotionEffects.isEmpty())
         {
             final S1DPacketEntityEffect packet = event.getPacket();
-            if (packet.getEntityId() == MC.thePlayer.getEntityId() && expectedPotionEffects.contains((int) packet.getPotionId()))
+            if (packet.func_149426_d() == MC.thePlayer.getEntityId() && expectedPotionEffects.contains((int) packet.func_149427_e()))
             {
                 thrown = false;
                 thrownPot = InventoryUtil.INVALID_SLOT;
@@ -205,7 +205,7 @@ public final class AutoPotModule extends InteractionModule
                 }
 
                 final int amplifier = isPotionApplied(id)
-                        ? MC.thePlayer.getActivePotionEffect(id).getAmplifier()
+                        ? MC.thePlayer.getActivePotionEffect(Potion.potionTypes[id]).getAmplifier()
                         : -1;
                 if (amplifier < effect.getAmplifier())
                 {
@@ -251,7 +251,7 @@ public final class AutoPotModule extends InteractionModule
         }
         if (neverRunOutSetting.getValue())
         {
-            final PotionEffect effect = MC.thePlayer.getActivePotionEffect(id);
+            final PotionEffect effect = MC.thePlayer.getActivePotionEffect(Potion.potionTypes[id]);
             return effect != null && effect.getDuration() >= MAX_DURATION_TICKS_NEVER_RUNOUT;
         }
         return true;

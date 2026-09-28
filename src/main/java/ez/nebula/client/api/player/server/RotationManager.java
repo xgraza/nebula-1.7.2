@@ -4,10 +4,10 @@ import ez.nebula.client.api.listener.EventBus;
 import ez.nebula.client.api.listener.EventListener;
 import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.network.EventPacket;
-import ez.nebula.client.api.listener.event.player.EventMove;
 import ez.nebula.client.api.listener.event.player.EventMoveUpdate;
 import ez.nebula.client.api.listener.event.world.EventChangeWorld;
 import ez.nebula.client.api.manager.IManager;
+import ez.nebula.client.mixin.duck.IEntityLivingBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.MathHelper;
@@ -97,10 +97,10 @@ public final class RotationManager implements IManager
         if (event.getPacket() instanceof C03PacketPlayer)
         {
             final C03PacketPlayer packet = event.getPacket();
-            if (packet.hasRotated())
+            if (packet.func_149463_k())
             {
-                serverAngles[0] = packet.getYaw();
-                serverAngles[1] = packet.getPitch();
+                serverAngles[0] = packet.func_149462_g();
+                serverAngles[1] = packet.func_149470_h();
             }
         }
     };
@@ -235,7 +235,7 @@ public final class RotationManager implements IManager
     private void setRenderAngles()
     {
         MC.thePlayer.rotationYawHead = serverAngles[0];
-        MC.thePlayer.renderPitch = serverAngles[1];
+        ((IEntityLivingBase)MC.thePlayer).nebula$setRenderPitch(serverAngles[1]);
 
         // see EntityLivingBase#func_110146_f
         float yaw = MC.thePlayer.renderYawOffset;

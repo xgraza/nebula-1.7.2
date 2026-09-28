@@ -12,6 +12,8 @@ import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.ColorSetting;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IChunkProviderClient;
 import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
 import io.netty.util.internal.ConcurrentSet;
@@ -92,7 +94,7 @@ public final class StashHunterModule extends Module
             final int color = minecartColorSetting.getValue().getRGB();
             for (final Vec3 pos : stackedMinecartPositionSet)
             {
-                final AxisAlignedBB bb = new AxisAlignedBB(pos, 1);
+                final AxisAlignedBB bb = IAxisAlignedBB.create(pos, 1);
                 Render3D.filledAABB(bb, QuadMask.ALL_FACES, color);
                 Render3D.outlinedAABB(bb, 1.5f, QuadMask.ALL_FACES, color);
             }
@@ -102,7 +104,7 @@ public final class StashHunterModule extends Module
             final int color = chestsColorSetting.getValue().getRGB();
             for (final BlockPos pos : chestsRenderList)
             {
-                final AxisAlignedBB bb = new AxisAlignedBB(pos);
+                final AxisAlignedBB bb = IAxisAlignedBB.create(pos);
                 Render3D.filledAABB(bb, QuadMask.ALL_FACES, color);
                 Render3D.outlinedAABB(bb, 1.5f, QuadMask.ALL_FACES, color);
             }
@@ -163,13 +165,16 @@ public final class StashHunterModule extends Module
 
     private void findALotOfChests()
     {
-        final ChunkProviderClient chunkProviderClient = (ChunkProviderClient) MC.theWorld.getChunkProvider();
-        final List<Chunk> chunkList = chunkProviderClient.getChunkListing();
-        for (final Chunk chunk : chunkList)
+        for (final Chunk chunk : ((IChunkProviderClient)MC.theWorld.getChunkProvider()).nebula$getChunkListing())
         {
             final List<BlockPos> chestTileEntityList = new ArrayList<>();
-            for (final TileEntity tileEntity : chunk.chunkTileEntityMap.values())
+            for (final Object o : chunk.chunkTileEntityMap.values())
             {
+                if (!(o instanceof TileEntity))
+                {
+                    continue;
+                }
+                final TileEntity tileEntity = (TileEntity)o;
                 if (!(tileEntity instanceof TileEntityChest) || !observedObjects.add(tileEntity))
                 {
                     continue;

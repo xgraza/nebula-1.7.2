@@ -24,6 +24,7 @@ import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.ModuleRotationPriorities;
 import ez.nebula.client.impl.module.render.HUDModule;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.math.Timer;
 import ez.nebula.client.util.minecraft.player.*;
@@ -137,7 +138,7 @@ public final class ScaffoldModule extends InteractionModule
         }
         place(blockData, slot);
 
-        if (MC.gameSettings.keyBindJump.pressed && towerSetting.getValue())
+        if (MC.gameSettings.keyBindJump.getIsKeyPressed() && towerSetting.getValue())
         {
             ++towerTicks;
             if (MC.thePlayer.isPotionActive(Potion.jump))
@@ -171,7 +172,7 @@ public final class ScaffoldModule extends InteractionModule
     @Subscribe
     private final EventListener<EventJump> jumpEventListener = event ->
     {
-        if (towerSetting.getValue() && MC.gameSettings.keyBindJump.pressed)
+        if (towerSetting.getValue() && MC.gameSettings.keyBindJump.getIsKeyPressed())
         {
             event.cancel();
         }
@@ -180,7 +181,7 @@ public final class ScaffoldModule extends InteractionModule
     @Subscribe
     private final EventListener<EventSafeWalk> eventSafeWalkEventListener = event ->
     {
-        if (MC.thePlayer.onGround && !MC.gameSettings.keyBindJump.pressed && safeWalkSetting.getValue())
+        if (MC.thePlayer.onGround && !MC.gameSettings.keyBindJump.getIsKeyPressed() && safeWalkSetting.getValue())
         {
             event.cancel();
         }
@@ -249,7 +250,7 @@ public final class ScaffoldModule extends InteractionModule
 
         MC.mcProfiler.startSection("scaffold");
 
-        final AxisAlignedBB aabb = new AxisAlignedBB(blockData.getPos());
+        final AxisAlignedBB aabb = IAxisAlignedBB.create(blockData.getPos());
         final ColorSetting cs = HUDModule.INSTANCE.primaryColorSetting;
         Render3D.filledAABB(aabb, QuadMask.mask(blockData.getFacing()), cs.getValueInt(120));
         Render3D.outlinedAABB(aabb, 1.5f, QuadMask.mask(blockData.getFacing()), cs.getValueInt());
@@ -269,7 +270,7 @@ public final class ScaffoldModule extends InteractionModule
     {
         return stack != null
                 && stack.getItem() instanceof ItemBlock
-                && ((ItemBlock) stack.getItem()).getBlock().getMaterial().isSolid();
+                && ((ItemBlock) stack.getItem()).field_150939_a.getMaterial().isSolid();
     }
 
     private BlockInfo getBlockData()
@@ -282,7 +283,7 @@ public final class ScaffoldModule extends InteractionModule
         }
 
         if (!keeepYSetting.getValue()
-                || (towerSetting.getValue() && MC.gameSettings.keyBindJump.pressed)
+                || (towerSetting.getValue() && MC.gameSettings.keyBindJump.getIsKeyPressed())
                 || basePosY == -1.0
                 || downwardsSetting.getValue().isToggled())
         {
@@ -294,13 +295,13 @@ public final class ScaffoldModule extends InteractionModule
             basePosY = 256;
         }
 
-        if (downwardsSetting.getValue().isToggled() && !MC.gameSettings.keyBindJump.pressed)
+        if (downwardsSetting.getValue().isToggled() && !MC.gameSettings.keyBindJump.getIsKeyPressed())
         {
             basePosY -= 1;
         }
 
         BlockPos pos = PlayerUtil.getOrigin(basePosY);
-        if (extend.getValue() > 0.0 && !MC.gameSettings.keyBindJump.pressed)
+        if (extend.getValue() > 0.0 && !MC.gameSettings.keyBindJump.getIsKeyPressed())
         {
             final float yaw = MC.thePlayer.rotationYaw * 0.017453292f;
 

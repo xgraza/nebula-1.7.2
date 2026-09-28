@@ -8,6 +8,8 @@ import ez.nebula.client.api.listener.event.world.EventPlace;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.manager.module.type.InteractionModule;
+import ez.nebula.client.mixin.duck.IEnumFacing;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
 import ez.nebula.client.util.minecraft.world.BlockUtil;
@@ -78,7 +80,7 @@ public final class AutoWitherModule extends InteractionModule
 
         for (final BlockPos soulSandPos : soulSandPositions)
         {
-            if (!(MC.theWorld.getBlock(soulSandPos) instanceof BlockSoulSand))
+            if (!(((IWorld)MC.theWorld).nebula$getBlock(soulSandPos) instanceof BlockSoulSand))
             {
                 Nebula.INVENTORY.sync();
                 pos = null;
@@ -123,7 +125,7 @@ public final class AutoWitherModule extends InteractionModule
         final ItemStack itemStack = event.getItemStack();
         if (itemStack != null
                 && itemStack.getItem() instanceof ItemBlock
-                && ((ItemBlock) itemStack.getItem()).getBlock() instanceof BlockSoulSand)
+                && ((ItemBlock) itemStack.getItem()).field_150939_a instanceof BlockSoulSand)
         {
             // we need at least 5 blocks of soul sand (pre place) to make a wither
             if (!InventoryUtil.hasEnough(itemStack, 4))
@@ -132,7 +134,7 @@ public final class AutoWitherModule extends InteractionModule
             }
             // get the correct pos via the place face
             pos = new BlockPos(event.getX(), event.getY(), event.getZ())
-                    .add(EnumFacing.faceList[event.getSide()].getFaceOffset());
+                    .add(((IEnumFacing)(Object)EnumFacing.values()[event.getSide()]).nebula$getFaceOffset());
             return;
         }
         pos = null;

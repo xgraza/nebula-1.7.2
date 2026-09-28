@@ -215,7 +215,7 @@ public final class TrajectoriesModule extends Module
             }
 
             final List<Entity> entitiesColliding = MC.theWorld.getEntitiesWithinAABB(Entity.class,
-                    new AxisAlignedBB(
+                    AxisAlignedBB.getBoundingBox(
                             x - size, y - size, z - size,
                             x + size, y + size, z + size)
                             .addCoord(motionX, motionY, motionZ)

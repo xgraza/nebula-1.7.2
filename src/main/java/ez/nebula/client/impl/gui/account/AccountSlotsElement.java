@@ -2,6 +2,7 @@ package ez.nebula.client.impl.gui.account;
 
 import ez.nebula.client.Nebula;
 import ez.nebula.client.api.manager.account.Account;
+import ez.nebula.client.mixin.duck.IMinecraft;
 import ez.nebula.client.util.render.HeadDownloader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -49,7 +50,7 @@ final class AccountSlotsElement extends GuiSlot
             final Account account = accountList.get(var1);
             if (account != null)
             {
-                mc.setSession(new Session(account.getUsername(), "", ""));
+                ((IMinecraft)Minecraft.getMinecraft()).nebula$setSession(new Session(account.getUsername(), "", ""));
             }
         } else
         {
@@ -105,9 +106,9 @@ final class AccountSlotsElement extends GuiSlot
             glEnd();
             glPopMatrix();
         }
-        mc.fontRenderer.drawStringWithShadow(account.getUsername(),
+        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(account.getUsername(),
                 var2 + (texture != null ? textureSize + 5 : 2),
-                var3 + (27 / 2) - (mc.fontRenderer.FONT_HEIGHT / 2), -5592406);
+                var3 + (27 / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2), -5592406);
     }
 
     public int getSelected()

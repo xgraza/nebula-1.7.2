@@ -104,12 +104,12 @@ public final class CoordinatesHUDElement extends HUDElement
             builder.append(EnumChatFormatting.DARK_GRAY);
             builder.append("(");
             int offset;
-            if ((offset = face.getFaceX()) != 0)
+            if ((offset = face.getFrontOffsetX()) != 0)
             {
                 builder.append(offset == -1 ? "-" : "+");
                 builder.append("X");
             }
-            if ((offset = face.getFaceZ()) != 0)
+            if ((offset = face.getFrontOffsetZ()) != 0)
             {
                 builder.append(offset == -1 ? "-" : "+");
                 builder.append("Z");

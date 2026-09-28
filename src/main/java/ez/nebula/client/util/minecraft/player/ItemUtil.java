@@ -40,13 +40,13 @@ public final class ItemUtil
         {
             return 0.0f;
         }
-        return getEnchantScore(((ItemSword) itemStack.getItem()).itemDamage,
+        return getEnchantScore(((ItemSword) itemStack.getItem()).func_150931_i() + 4.0f,
                 SWORD_ENCHANTMENTS, itemStack, _32k);
     }
 
     public static float getToolScore(final ItemStack itemStack, final Block attackedBlock)
     {
-        float damage = itemStack.getStrVsBlock(attackedBlock);
+        float damage = itemStack.func_150997_a(attackedBlock);
         if (damage <= 1.0f)
         {
             return 0.0f;
@@ -89,12 +89,13 @@ public final class ItemUtil
         return itemStack != null && itemStack.stackSize < 0;
     }
 
+    @SuppressWarnings("unchecked")
     public static boolean is32k(final ItemStack itemStack)
     {
         return itemStack != null
                 && EnchantmentHelper.getEnchantments(itemStack)
                 .keySet()
                 .stream()
-                .anyMatch((x) -> x >= Short.MAX_VALUE);
+                .anyMatch((x) -> (short)x >= Short.MAX_VALUE);
     }
 }

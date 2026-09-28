@@ -11,6 +11,7 @@ import ez.nebula.client.api.manager.module.type.RotationModule;
 import ez.nebula.client.api.manager.module.type.RotationPriority;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.ModuleRotationPriorities;
+import ez.nebula.client.mixin.duck.IEnumFacing;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
@@ -73,10 +74,10 @@ public final class BurrowModule extends RotationModule
         {
             final S23PacketBlockChange packet = event.getPacket();
             final BlockPos pos = PlayerUtil.getOrigin().add(0, 1, 0);
-            if (packet.getX() == pos.getX()
-                    && packet.getY() == pos.getY()
-                    && packet.getZ() == pos.getZ()
-                    && packet.getType().getMaterial().isReplaceable())
+            if (packet.func_148879_d() == pos.getX()
+                    && packet.func_148878_e() == pos.getY()
+                    && packet.func_148877_f() == pos.getZ()
+                    && packet.func_148880_c().getMaterial().isReplaceable())
             {
                 burrow();
             }
@@ -134,7 +135,7 @@ public final class BurrowModule extends RotationModule
                 blockData.pos.getX(),
                 blockData.pos.getY(),
                 blockData.pos.getZ(),
-                blockData.facing.order_a,
+                blockData.facing.ordinal(),
                 MC.thePlayer.getHeldItem(),
                 (float) (hitVec.xCoord - blockData.pos.getX()),
                 (float) (hitVec.yCoord - blockData.pos.getY()),
@@ -170,7 +171,7 @@ public final class BurrowModule extends RotationModule
             final BlockPos n = origin.offset(facing);
             if (!BlockUtil.isReplaceable(n))
             {
-                return new BlockData(n, facing.getOpposite());
+                return new BlockData(n, ((IEnumFacing)(Object)facing).nebula$getOpposite());
             }
         }
         return null;

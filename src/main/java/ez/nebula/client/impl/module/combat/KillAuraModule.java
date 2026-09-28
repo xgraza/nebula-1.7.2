@@ -373,6 +373,7 @@ public final class KillAuraModule extends InteractionModule
         }
     }
 
+    @SuppressWarnings("unchecked")
     private EntityLivingBase getNextTarget()
     {
         return (EntityLivingBase) MC.theWorld.loadedEntityList

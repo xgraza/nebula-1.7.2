@@ -1,19 +1,40 @@
-import us.nebula.gradle.DownloadMCAssets
-import us.nebula.gradle.GenerateChangelogs
-import us.nebula.gradle.UploadBuildToServerTask
 import us.nebula.gradle.Util
 
-plugins {
-    id 'com.github.gmazzo.buildconfig' version "$build_config_version"
-    id 'application'
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net/"
+        }
+        maven { url 'https://repo.spongepowered.org/maven' }
+    }
+    dependencies {
+        classpath ("com.anatawa12.forge:ForgeGradle:$project.forge_gradle_version") {
+            changing = true
+        }
+    }
 }
 
-// Set to true when you want to build with all needed dependencies
-// Defaulted to false because deps are placed on the server to launch w/ launcher
-var BUILD_LOCAL = true
-if (BUILD_LOCAL) {
-    println "Local build is turned on, will not attempt to upload build"
+plugins {
+    id 'java-library'
+    id 'com.github.gmazzo.buildconfig' version "$build_config_version"
 }
+
+configurations.configureEach {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        // ooga booga
+        if (details.requested.group == 'org.lwjgl.lwjgl') {
+            details.useVersion project.lwjgl_version
+        }
+        // i hate old ass versions of java
+        if (details.requested.group == 'org.ow2.asm') {
+            details.useVersion project.asm_version
+        }
+    }
+}
+
+apply plugin: 'forge'
 
 var buildNumber = project.build_id.toInteger()
 var gitHash = Util.execute("git rev-parse --short HEAD", "error")
@@ -36,91 +57,108 @@ buildConfig {
     generateAtSync = true
 }
 
-application {
-    mainClass = 'Start'
-    applicationDefaultJvmArgs = Util.getLaunchJVMFlags()
-}
-
-run {
-    workingDir = file(Util.createPathString(Util.USER_DIR, "run"))
-    args += "-gameDir=$workingDir.absolutePath"
-}
-
 sourceSets.main.java.srcDirs += "build/gen/buildconfig/src/main"
+
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+    options.encoding 'UTF-8'
+}
 
 configurations {
     jarLib
     implementation.extendsFrom(jarLib)
+    configureEach {
+        resolutionStrategy {
+            force "org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209"
+
+            force "org.ow2.asm:asm:5.2"
+            force "org.ow2.asm:asm-tree:5.2"
+            force "org.ow2.asm:asm-commons:5.2"
+            force "org.ow2.asm:asm-debug-all:5.2"
+        }
+    }
+}
+
+minecraft {
+    version = project.minecraft_version + '-' + project.forge_version
+    runDir = "run"
+}
+
+def refMap = "${tasks.compileJava.temporaryDir}" + File.separator + "mixins.nebula.refmap.json"
+def mixinSrg = "${tasks.reobf.temporaryDir}" + File.separator + "mixins.srg"
+afterEvaluate {
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs += ["-AreobfSrgFile=${tasks.reobf.srg}",
+                                 "-AoutSrgFile=${mixinSrg}",
+                                 "-AoutRefMapFile=${refMap}"]
+    }
+
+    tasks.withType(JavaExec).configureEach {
+        jvmArgs "-Dfml.coreMods.load=ez.nebula.client.forge.NebulaMixinLoadingPlugin"
+        jvmArgs "-Dfml.ignoreModNames=true"
+        args "--tweakClass", "org.spongepowered.asm.launch.MixinTweaker"
+    }
+}
+
+reobf {
+    addExtraSrgFile mixinSrg
 }
 
 repositories {
     mavenCentral()
-    maven {
-        name = "Minecraft Libraries"
-        url = "https://libraries.minecraft.net/"
-    }
+    maven { url 'https://repo.spongepowered.org/maven' }
 }
 
-var dependenciesPath = "dependencies${Util.SEPARATOR}libraries${Util.SEPARATOR}"
 dependencies {
-    implementation fileTree("${dependenciesPath}shared")
-    jarLib fileTree("${dependenciesPath}include")
+    jarLib("org.spongepowered:mixin:$project.mixin_version") {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+    annotationProcessor("org.spongepowered:mixin:$project.mixin_annotation_processor_version:processor") {
+        exclude module: 'gson'
+    }
 
-    jarLib "org.java-websocket:Java-WebSocket:$project.jws_version"
-    jarLib group: 'com.mojang', name: 'brigadier', version: project.brigadier_version
-    implementation group: 'org.lwjgl.lwjgl', name: 'lwjgl', version: project.lwjgl_version
-    implementation group: 'org.lwjgl.lwjgl', name: 'lwjgl_util', version: project.lwjgl_version
+    // jarLib "org.java-websocket:Java-WebSocket:$project.jws_version"
+    jarLib "com.mojang:brigadier:$project.brigadier_version"
 }
 
 tasks.withType(Jar).configureEach {
-    if (BUILD_LOCAL) {
-        from {
-            configurations.jarLib
-                    .filter { !it.name.endsWithIgnoreCase(".sha256") }
-                    .collect { it.isDirectory() ? it : zipTree(it) }
-        }
+    from {
+        configurations.jarLib
+                .collect { it.isDirectory() ? it : zipTree(it) }
     }
+    exclude 'dummyThing',
+            'LICENSE.txt',
+            'META-INF/MUMFREY.RSA',
+            'META-INF/maven/**',
+            'org/**/*.html'
+    from refMap
+
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest.attributes(
+            'FMLCorePluginContainsFMLMod': true,
+            'FMLCorePlugin': 'ez.nebula.client.forge.NebulaMixinLoadingPlugin',
+            // 'ForceLoadAsMod': true,
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            // 'FMLAT': 'nebula_AT.cfg',
+
             'Nebula-Version': project.version,
             'Nebula-BuildID': buildNumber,
             'Nebula-Branch': gitBranch,
-            'Nebula-Hash': gitHash,
-            'ImInYourWalls': 'true'
+            'Nebula-Hash': gitHash
     )
 }
 
-tasks.withType(JavaCompile).configureEach {
-    dependsOn(generateBuildConfig)
-}
-
-tasks.register('generateChangelogs', GenerateChangelogs) {
-    setGroup("nebula")
-    setDescription("Generates a changelog to CHANGELOG.md")
-}
-
-tasks.register('createNebulaBuild') {
-    setGroup("nebula")
-    setDescription("Creates a new nebula build")
-
-    // dependsOn(updateBuildID)
-    dependsOn(build)
-
-    if (!BUILD_LOCAL) {
-        finalizedBy uploadBuildToServer
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    filesMatching('mcmod.info') {
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 }
 
-tasks.register('downloadMCAssets', DownloadMCAssets) {
-    setGroup("nebula")
-    setDescription("Downloads 1.7.2 assets to your run folder")
-    setRunDirectory(Util.createPathString(Util.USER_DIR, "run"))
-}
-
-tasks.register('uploadBuildToServer', UploadBuildToServerTask) {
-    setGroup("nebula")
-    setDescription("Creates a nebula build and uploads the build and its dependants to the server")
-
-    setBuildDirectory(Util.createPathString(Util.USER_DIR, "build", "libs"))
-    setLibrariesDirectory(Util.createPathString(Util.USER_DIR, "dependencies", "nebula_libraries"))
+reobf {
+    addExtraSrgFile mixinSrg
 }

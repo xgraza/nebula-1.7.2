@@ -13,6 +13,8 @@ import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IBlock;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.ItemUtil;
@@ -104,9 +106,9 @@ public final class PacketMineModule extends Module
         AxisAlignedBB bb = MC.theWorld.getBlock(x, y, z).getSelectedBoundingBoxFromPool(MC.theWorld, x, y, z);
         if (bb == null)
         {
-            bb = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+            bb = AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1);
         }
-        bb = new AxisAlignedBB(bb.getCenter(), 0.0).copy();
+        bb = IAxisAlignedBB.create(((IAxisAlignedBB)bb).nebula$getCenter(), 0.0).copy();
 
         final double factor = MathHelper.clamp_double(currentPosition.progress, 0.0, 1.0);
         bb = bb.expand(factor * 0.5, factor * 0.5, factor * 0.5);
@@ -169,10 +171,10 @@ public final class PacketMineModule extends Module
         if (event.getPacket() instanceof S23PacketBlockChange && currentPosition != null && rebreakSetting.getValue())
         {
             final S23PacketBlockChange packet = event.getPacket();
-            if (packet.getX() == currentPosition.x && packet.getY() == currentPosition.y && packet.getZ() == currentPosition.z)
+            if (packet.func_148879_d() == currentPosition.x && packet.func_148878_e() == currentPosition.y && packet.func_148877_f() == currentPosition.z)
             {
-                final Block currentBlock = MC.theWorld.getBlock(packet.getX(), packet.getY(), packet.getZ());
-                final Block newBlock = packet.getType();
+                final Block currentBlock = MC.theWorld.getBlock(packet.func_148879_d(), packet.func_148878_e(), packet.func_148877_f());
+                final Block newBlock = packet.func_148880_c();
                 if (currentBlock.getMaterial().isReplaceable() && !newBlock.getMaterial().isReplaceable())
                 {
                     startBreak();
@@ -200,7 +202,7 @@ public final class PacketMineModule extends Module
             return;
         }
         final Block block = MC.theWorld.getBlock(event.getX(), event.getY(), event.getZ());
-        if (block.blockHardness == -1.0f)
+        if (((IBlock)block).nebula$getBlockHardness() == -1.0f)
         {
             return;
         }
@@ -276,16 +278,16 @@ public final class PacketMineModule extends Module
     private double getStrength(final MinePosition position)
     {
         final Block block = MC.theWorld.getBlock(position.x, position.y, position.z);
-        if (block.blockHardness < 0.0f)
+        if (((IBlock)block).nebula$getBlockHardness() < 0.0f)
         {
             return 0.0f;
         }
         final ItemStack itemStack = MC.thePlayer.inventory.getStackInSlot(getSlot(block));
         final double speed = getDestroySpeed(block, itemStack);
-        final double factor = ((itemStack != null && itemStack.isProperItemForBlock(block)) || block.getMaterial().isToolNotRequired())
+        final double factor = ((itemStack != null && itemStack.func_150998_b(block)) || block.getMaterial().isToolNotRequired())
                 ? 30.0f
                 : 100.0f;
-        return speed / block.blockHardness / factor;
+        return speed / ((IBlock)block).nebula$getBlockHardness() / factor;
     }
 
     private double getDestroySpeed(final Block blockAt, final ItemStack itemStack)
@@ -293,7 +295,7 @@ public final class PacketMineModule extends Module
         float breakSpeed = 1.0f;
         if (itemStack != null)
         {
-            breakSpeed *= itemStack.getStrVsBlock(blockAt);
+            breakSpeed *= itemStack.func_150997_a(blockAt);
         }
 
         if (breakSpeed > 1.0f)
@@ -302,7 +304,7 @@ public final class PacketMineModule extends Module
             if (efficiency > 0)
             {
                 float mod = efficiency * efficiency + 1.0f;
-                breakSpeed += (itemStack.isProperItemForBlock(blockAt) ? mod : mod * 0.08f);
+                breakSpeed += (itemStack.func_150998_b(blockAt) ? mod : mod * 0.08f);
             }
         }
 

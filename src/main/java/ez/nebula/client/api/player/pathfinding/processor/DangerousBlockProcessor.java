@@ -1,6 +1,7 @@
 package ez.nebula.client.api.player.pathfinding.processor;
 
 import ez.nebula.client.api.player.pathfinding.node.NodeContext;
+import ez.nebula.client.mixin.duck.IWorld;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBasePressurePlate;
 import net.minecraft.init.Blocks;
@@ -13,8 +14,8 @@ public final class DangerousBlockProcessor implements IProcessor
     {
         final BlockPos pos = ctx.getPos();
 
-        Block block = MC.theWorld.getBlock(pos);
-        Block blockUnder = MC.theWorld.getBlock(pos.down());
+        Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
+        Block blockUnder = ((IWorld)MC.theWorld).nebula$getBlock(pos.down());
 
         // if we are trying to pass through water, give it a not-ideal cost
         if (block == Blocks.water || block == Blocks.flowing_water)

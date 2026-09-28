@@ -48,7 +48,7 @@ public final class BlockSetting extends Setting<BlockValue>
         {
             return false;
         }
-        return ((ItemBlock) itemStack.getItem()).getBlock() == getBlock()
+        return ((ItemBlock) itemStack.getItem()).field_150939_a == getBlock()
                 && itemStack.getItemDamage() == getSubType();
     }
 

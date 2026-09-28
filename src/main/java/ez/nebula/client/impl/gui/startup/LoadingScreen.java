@@ -74,12 +74,12 @@ public final class LoadingScreen
         //System.out.println(stage + "/" + totalLoadingStages + " -> " + text);
         loadingStage = stage;
         loadingStageText = text;
-        try
-        {
-            mc.loadScreen();
-        } catch (LWJGLException e)
-        {
-            throw new RuntimeException(e);
-        }
+//        try
+//        {
+//            mc.loadScreen();
+//        } catch (LWJGLException e)
+//        {
+//            throw new RuntimeException(e);
+//        }
     }
 }

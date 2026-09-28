@@ -13,6 +13,8 @@ import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.ModuleRotationPriorities;
 import ez.nebula.client.impl.module.player.FreecamModule;
+import ez.nebula.client.mixin.duck.IEntity;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
@@ -72,7 +74,7 @@ public final class IgniteModule extends InteractionModule
         }
 
         final BlockPos origin = PlayerUtil.getOrigin(player);
-        if (MC.theWorld.getBlock(origin) instanceof BlockFire
+        if (((IWorld)MC.theWorld).nebula$getBlock(origin) instanceof BlockFire
                 || !BlockUtil.isReplaceable(origin)
                 || BlockUtil.isReplaceable(origin.down()))
         {
@@ -100,18 +102,19 @@ public final class IgniteModule extends InteractionModule
         }
     };
 
+    @SuppressWarnings("unchecked")
     private EntityPlayer getTarget()
     {
-        return MC.theWorld.playerEntities.stream()
+        return (EntityPlayer) MC.theWorld.playerEntities.stream()
                 .filter((player) -> !player.equals(MC.thePlayer)
-                        && !player.isDead
-                        && player.getHealth() > 0.0f
-                        && player.getEntityId() != FreecamModule.CAMERA_ENTITY_ID
-                        && player.getDistanceToEntity(MC.thePlayer) <= rangeSetting.getValue()
-                        && (NoFriendsModule.INSTANCE.isToggled() || !Nebula.FRIENDS.has(player))
-                        && !player.isPotionActive(Potion.fireResistance.id)
-                        && (hellSetting.getValue() || player.fire <= 0))
-                .min(Comparator.comparingDouble((player) -> MC.thePlayer.getDistanceToEntity(player)))
+                        && !((EntityPlayer)player).isDead
+                        && ((EntityPlayer)player).getHealth() > 0.0f
+                        && ((EntityPlayer)player).getEntityId() != FreecamModule.CAMERA_ENTITY_ID
+                        && ((EntityPlayer)player).getDistanceToEntity(MC.thePlayer) <= rangeSetting.getValue()
+                        && (NoFriendsModule.INSTANCE.isToggled() || !Nebula.FRIENDS.has(((EntityPlayer)player)))
+                        && !((EntityPlayer)player).isPotionActive(Potion.fireResistance.id)
+                        && (hellSetting.getValue() || ((IEntity) player).nebula$getFire() <= 0))
+                .min(Comparator.comparingDouble((player) -> MC.thePlayer.getDistanceToEntity(((EntityPlayer)player))))
                 .orElse(null);
     }
 }

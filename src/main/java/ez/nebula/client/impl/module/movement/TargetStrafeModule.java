@@ -161,7 +161,7 @@ public final class TargetStrafeModule extends Module
     private double getStrafeRange()
     {
         double range = Math.min(rangeSetting.getValue(), KillAuraModule.INSTANCE.rangeSetting.getValue());
-        if (MC.gameSettings.keyBindForward.pressed && MC.renderViewEntity.equals(MC.thePlayer))
+        if (MC.gameSettings.keyBindForward.getIsKeyPressed() && MC.renderViewEntity.equals(MC.thePlayer))
         {
             range -= advanceSetting.getValue();
         }

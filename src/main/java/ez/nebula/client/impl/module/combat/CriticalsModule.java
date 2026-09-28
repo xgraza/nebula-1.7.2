@@ -17,6 +17,8 @@ import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.movement.SpeedModule;
 import ez.nebula.client.impl.module.world.FakePlayerModule;
+import ez.nebula.client.mixin.duck.IEntity;
+import ez.nebula.client.mixin.duck.IEntityClientPlayerMP;
 import ez.nebula.client.util.math.Timer;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
@@ -68,7 +70,7 @@ public final class CriticalsModule extends Module
     @Subscribe(priority = IEventPriorities.MEDIUM)
     private final EventListener<EventMoveUpdate> moveUpdateEventListener = event ->
     {
-        if (modifyStage == -1 || MC.gameSettings.keyBindJump.pressed || SpeedModule.INSTANCE.isActive() || !MC.thePlayer.onGround)
+        if (modifyStage == -1 || MC.gameSettings.keyBindJump.getIsKeyPressed() || SpeedModule.INSTANCE.isActive() || !MC.thePlayer.onGround)
         {
             modifyStage = -1;
             return;
@@ -103,7 +105,7 @@ public final class CriticalsModule extends Module
         if (event.getPacket() instanceof C02PacketUseEntity)
         {
             final C02PacketUseEntity packet = event.getPacket();
-            if (!packet.getAction().equals(C02PacketUseEntity.Action.ATTACK))
+            if (!packet.func_149565_c().equals(C02PacketUseEntity.Action.ATTACK))
             {
                 return;
             }
@@ -116,7 +118,7 @@ public final class CriticalsModule extends Module
             if (!MC.thePlayer.onGround
                     || MC.thePlayer.isOnLadder()
                     || MC.thePlayer.isInWater()
-                    || MC.thePlayer.isInWeb
+                    || ((IEntity)MC.thePlayer).nebula$getIsInWeb()
                     || MC.thePlayer.isPotionActive(Potion.blindness)
                     || PlayerUtil.isAboveWater())
             {
@@ -174,7 +176,7 @@ public final class CriticalsModule extends Module
                 }
                 case PACKET_2:
                 {
-                    if (modifyStage == -1 && MC.thePlayer.groundTicks > 2)
+                    if (modifyStage == -1 && ((IEntityClientPlayerMP)MC.thePlayer).nebula$getGroundTicks() > 2)
                     {
                         modifyStage = 0;
                     }

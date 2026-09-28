@@ -69,12 +69,13 @@ public final class AutoTagModule extends InteractionModule
     }
 
     @Subscribe
+    @SuppressWarnings("unchecked")
     private final EventListener<EventUpdate> updateEventListener = event ->
     {
         target = (EntityLiving) MC.theWorld.loadedEntityList
                 .stream()
-                .filter(this::isValidEntity)
-                .min(Comparator.comparingDouble((e) -> MC.thePlayer.getDistanceToEntity(e)))
+                .filter((e) -> isValidEntity((Entity) e))
+                .min(Comparator.comparingDouble((e) -> MC.thePlayer.getDistanceToEntity((Entity)e)))
                 .orElse(null);
         if (target == null)
         {

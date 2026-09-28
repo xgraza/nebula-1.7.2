@@ -3,7 +3,8 @@ package ez.nebula.client.impl.hud2;
 import ez.nebula.client.Nebula;
 import ez.nebula.client.api.manager.hud2.trait.HUDManifest;
 import ez.nebula.client.api.manager.hud2.type.TextHUDElement;
-import ez.nebula.client.util.minecraft.player.MoveUtil;
+import ez.nebula.client.mixin.duck.IMinecraft;
+import ez.nebula.client.util.minecraft.player.ChatUtil;
 import net.minecraft.util.EnumChatFormatting;
 
 /**
@@ -18,9 +19,9 @@ public final class SpeedHUDElement extends TextHUDElement
     {
         final double moveDelta = Nebula.MOVEMENT.getMoveSpeed();
         double speed = (moveDelta / 1000) / (0.05 / 3600);
-        speed *= MC.timer.timerSpeed;
+        speed *= ((IMinecraft)MC).nebula$getTimer().timerSpeed;
         speed /= 3.6;
-        return EnumChatFormatting.NEBULA_CLIENT_COLOR
+        return ChatUtil.NEBULA_CLIENT_COLOR
                 + "Speed (BPS): "
                 + EnumChatFormatting.GRAY
                 + String.format("%.1f", speed);

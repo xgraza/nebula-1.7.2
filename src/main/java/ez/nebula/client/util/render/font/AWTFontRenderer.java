@@ -247,7 +247,7 @@ public final class AWTFontRenderer
 
     private void bindFontTexture(final AWTFont font)
     {
-        glBindTexture(GL_TEXTURE_2D, font.getGlyphTexture().getGlTextureId());
+        glBindTexture(GL_TEXTURE_2D, font.getGlyphTexture());
         if (DYNAMIC_FONT_RESIZING)
         {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

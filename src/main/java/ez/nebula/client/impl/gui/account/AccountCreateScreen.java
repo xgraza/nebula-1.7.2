@@ -50,13 +50,13 @@ final class AccountCreateScreen extends GuiScreen
         passwordTextField.drawTextBox();
 
         Fonts.POPPINS.drawStringShadow("Username",
-                usernameTextField.posX,
-                usernameTextField.posY - Fonts.POPPINS.getFontHeight() - 2,
+                usernameTextField.xPosition,
+                usernameTextField.yPosition - Fonts.POPPINS.getFontHeight() - 2,
                 -1);
 
         Fonts.POPPINS.drawStringShadow("Password (optional)",
-                passwordTextField.posX,
-                passwordTextField.posY - Fonts.POPPINS.getFontHeight() - 2,
+                passwordTextField.xPosition,
+                passwordTextField.yPosition - Fonts.POPPINS.getFontHeight() - 2,
                 -1);
     }
 

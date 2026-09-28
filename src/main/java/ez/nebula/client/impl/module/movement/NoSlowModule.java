@@ -11,6 +11,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.EnumSetting;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.combat.KillAuraModule;
+import ez.nebula.client.mixin.duck.IEntity;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -76,7 +77,7 @@ public final class NoSlowModule extends Module
     @Subscribe(priority = IEventPriorities.HIGHEST)
     private final EventListener<EventSprint> sprintEventListener = event ->
     {
-        if (websSetting.getValue() && MC.thePlayer.isInWeb)
+        if (websSetting.getValue() && ((IEntity)MC.thePlayer).nebula$getIsInWeb())
         {
             event.setSprinting(false);
             event.cancel();

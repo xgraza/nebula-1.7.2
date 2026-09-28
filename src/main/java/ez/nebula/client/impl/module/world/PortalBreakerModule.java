@@ -11,6 +11,9 @@ import ez.nebula.client.api.listener.event.world.EventModifySelectedBoundBox;
 import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IEnumFacing;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.world.BlockUtil;
@@ -71,7 +74,7 @@ public final class PortalBreakerModule extends Module
             final BlockPos neighborPos = pos.offset(facing);
             if (!BlockUtil.isReplaceable(neighborPos))
             {
-                angles = AngleUtil.anglesToBlock(neighborPos, facing.getOpposite(), 1.0f);
+                angles = AngleUtil.anglesToBlock(neighborPos, ((IEnumFacing)(Object)facing).nebula$getOpposite(), 1.0f);
                 result = AngleUtil.raytrace(5, angles[0], angles[1]);
                 if (result == null
                         || (result.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
@@ -125,14 +128,14 @@ public final class PortalBreakerModule extends Module
         {
             return;
         }
-        event.setAabb(new AxisAlignedBB(new BlockPos(event.getX(), event.getY(), event.getZ())));
+        event.setAabb(IAxisAlignedBB.create(new BlockPos(event.getX(), event.getY(), event.getZ())));
     };
 
     @Subscribe
     private final EventListener<EventAttackBlock> attackBlockEventListener = event ->
     {
         final BlockPos pos = new BlockPos(event.getX(), event.getY(), event.getZ());
-        if (!(MC.theWorld.getBlock(pos) instanceof BlockEndPortal))
+        if (!(((IWorld)MC.theWorld).nebula$getBlock(pos) instanceof BlockEndPortal))
         {
             return;
         }

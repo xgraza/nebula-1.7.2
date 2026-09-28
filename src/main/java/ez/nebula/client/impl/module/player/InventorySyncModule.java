@@ -6,6 +6,7 @@ import ez.nebula.client.api.listener.event.network.EventPacket;
 import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
+import ez.nebula.client.mixin.duck.IContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 
@@ -24,16 +25,16 @@ public final class InventorySyncModule extends Module
         if (event.getPacket() instanceof S32PacketConfirmTransaction)
         {
             final S32PacketConfirmTransaction packet = event.getPacket();
-            final Container container = getContainer(packet.getID());
+            final Container container = getContainer(packet.func_148889_c());
             if (container == null)
             {
                 return;
             }
-            final short transaction = packet.getUID();
-            final short currentTransaction = container.transactionID;
+            final short transaction = packet.func_148890_d();
+            final short currentTransaction = ((IContainer)container).nebula$getTransactionId();
             if (transaction + 1 <= currentTransaction || transaction > currentTransaction)
             {
-                container.transactionID = (short) (transaction + 1);
+                ((IContainer)container).nebula$setTransactionId((short) (transaction + 1));
             }
         }
     };

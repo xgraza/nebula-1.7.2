@@ -32,7 +32,7 @@ final class CustomClassLoader extends URLClassLoader
      * Loads a ZIP-typed file into this class loader
      * @param zis the {@link ZipInputStream} to read from
      * @throws IOException
-     * @return a {@link java.util.ArrayList} of all added classes
+     * @return a {@link ArrayList} of all added classes
      */
     public List<Class<?>> from(final ZipInputStream zis) throws IOException
     {

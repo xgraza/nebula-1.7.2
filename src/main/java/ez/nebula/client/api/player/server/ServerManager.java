@@ -66,7 +66,7 @@ public final class ServerManager implements IManager
 
     public String ip()
     {
-        final ServerData serverData = MC.getCurrentServerData();
+        final ServerData serverData = MC.func_147104_D();
         if (serverData == null || serverData.serverIP == null)
         {
             if (MC.isSingleplayer())

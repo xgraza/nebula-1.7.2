@@ -73,7 +73,7 @@ public final class InfiniteMoverModule extends Module
 
             for (int containerSlot = start; containerSlot < end; ++containerSlot)
             {
-                final Slot slot = container.inventorySlots.get(containerSlot);
+                final Slot slot = (Slot)container.inventorySlots.get(containerSlot);
                 if (slot != null && slot.getHasStack())
                 {
                     continue;
@@ -103,7 +103,7 @@ public final class InfiniteMoverModule extends Module
 
             for (int invSlot = start; invSlot < end; ++invSlot)
             {
-                final Slot slot = container.inventorySlots.get(invSlot);
+                final Slot slot = (Slot)container.inventorySlots.get(invSlot);
                 if (slot != null && !slot.getHasStack())
                 {
                     moveSlot = invSlot;
@@ -118,7 +118,7 @@ public final class InfiniteMoverModule extends Module
             return;
         }
 
-        windowClick(event.getWindowId(), event.getSlotIndex(), InventoryUtil.ClickType.PICKUP);
-        windowClick(event.getWindowId(), moveSlot, InventoryUtil.ClickType.PICKUP);
+        windowClick(event.getWindowId(), event.getSlotIndex(), ClickType.PICKUP);
+        windowClick(event.getWindowId(), moveSlot, ClickType.PICKUP);
     };
 }

@@ -14,6 +14,7 @@ import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.api.setting.block.BlockSetting;
 import ez.nebula.client.impl.module.ModuleRotationPriorities;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
@@ -134,7 +135,7 @@ public final class AutoLavaHoleFillModule extends InteractionModule
             {
                 continue;
             }
-            final Block block = MC.theWorld.getBlock(pos);
+            final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
             if (block == null || block.getMaterial() != Material.lava)
             {
                 continue;
@@ -172,7 +173,7 @@ public final class AutoLavaHoleFillModule extends InteractionModule
                 continue;
             }
             final ItemBlock itemBlock = (ItemBlock) itemStack.getItem();
-            if (!itemBlock.getBlock().getMaterial().isSolid())
+            if (!itemBlock.field_150939_a.getMaterial().isSolid())
             {
                 continue;
             }

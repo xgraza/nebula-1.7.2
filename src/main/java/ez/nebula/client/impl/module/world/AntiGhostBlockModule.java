@@ -11,6 +11,8 @@ import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
@@ -81,13 +83,13 @@ public final class AntiGhostBlockModule extends Module
         MC.mcProfiler.startSection("antiGhostBlock");
         for (final BlockPos pos : placeConfirmBlockPosMap.keySet())
         {
-            final AxisAlignedBB aabb = new AxisAlignedBB(pos);
+            final AxisAlignedBB aabb = IAxisAlignedBB.create(pos);
             Render3D.filledAABB(aabb, QuadMask.ALL_FACES, 0xAB00FF00);
             Render3D.outlinedAABB(aabb, 1.5f, QuadMask.ALL_FACES, 0xAB00FF00);
         }
         for (final BlockPos pos : breakConfirmBlockPosMap.keySet())
         {
-            final AxisAlignedBB aabb = new AxisAlignedBB(pos);
+            final AxisAlignedBB aabb = IAxisAlignedBB.create(pos);
             Render3D.filledAABB(aabb, QuadMask.ALL_FACES, 0xAB00FF00);
             Render3D.outlinedAABB(aabb, 1.5f, QuadMask.ALL_FACES, 0xAB00FF00);
         }
@@ -146,7 +148,7 @@ public final class AntiGhostBlockModule extends Module
         } else if (event.getPacket() instanceof S23PacketBlockChange)
         {
             final S23PacketBlockChange packet = event.getPacket();
-            final BlockPos pos = new BlockPos(packet.getX(), packet.getY(), packet.getZ());
+            final BlockPos pos = new BlockPos(packet.func_148879_d(), packet.func_148878_e(), packet.func_148877_f());
 
             if (placeSetting.getValue())
             {
@@ -156,7 +158,7 @@ public final class AntiGhostBlockModule extends Module
 
             if (breakSetting.getValue() && breakConfirmBlockPosMap.containsKey(pos))
             {
-                final Block block = packet.getType();
+                final Block block = packet.func_148880_c();
                 if (block == null || block instanceof BlockAir)
                 {
                     breakConfirmBlockPosMap.remove(pos);
@@ -165,11 +167,11 @@ public final class AntiGhostBlockModule extends Module
         } else if (event.getPacket() instanceof S0EPacketSpawnObject)
         {
             final S0EPacketSpawnObject packet = event.getPacket();
-            if (packet.getType() != FALLING_BLOCK_ID)
+            if (packet.func_148993_l() != FALLING_BLOCK_ID)
             {
                 return;
             }
-            final BlockPos pos = new BlockPos((int) (packet.getX() / 32.0), (int) (packet.getY() / 32.0), (int) (packet.getZ() / 32.0));
+            final BlockPos pos = new BlockPos((int) (packet.func_148997_d() / 32.0), (int) (packet.func_148998_e() / 32.0), (int) (packet.func_148994_f() / 32.0));
             final OriginalBlockData blockData = breakConfirmBlockPosMap.get(pos);
             if (blockData == null)
             {
@@ -194,12 +196,12 @@ public final class AntiGhostBlockModule extends Module
                 return;
             }
 
-            final BlockPos pos = new BlockPos(packet.getPosX(), packet.getPosY(), packet.getPosZ());
-            final EnumFacing side = EnumFacing.faceList[packet.getSide()];
+            final BlockPos pos = new BlockPos(packet.func_149576_c(), packet.func_149571_d(), packet.func_149570_e());
+            final EnumFacing side = EnumFacing.values()[packet.func_149568_f()];
 
             if (packetSetting.getValue())
             {
-                PacketUtil.send(new C07PacketPlayerDigging(1, pos, side.order_a));
+                PacketUtil.send(new C07PacketPlayerDigging(1, pos.getX(), pos.getY(), pos.getZ(), side.ordinal()));
             }
             placeConfirmBlockPosMap.put(pos.offset(side), System.currentTimeMillis());
         }
@@ -207,33 +209,33 @@ public final class AntiGhostBlockModule extends Module
         if (event.getPacket() instanceof C07PacketPlayerDigging && breakSetting.getValue())
         {
             final C07PacketPlayerDigging packet = event.getPacket();
-            if (packet.getAction() != 2) // STOP_BREAKING / FINISH
+            if (packet.func_149506_g() != 2) // STOP_BREAKING / FINISH
             {
                 return;
             }
-            final BlockPos pos = new BlockPos(packet.getX(), packet.getY(), packet.getZ());
-            final Block block = MC.theWorld.getBlock(pos);
+            final BlockPos pos = new BlockPos(packet.func_149505_c(), packet.func_149503_d(), packet.func_149502_e());
+            final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
             if (block == null || block instanceof BlockAir)
             {
                 return;
             }
             // TODO: retain metadata?
-            breakConfirmBlockPosMap.put(pos, new OriginalBlockData(block, System.currentTimeMillis(), MC.theWorld.getBlockMetadata(pos)));
+            breakConfirmBlockPosMap.put(pos, new OriginalBlockData(block, System.currentTimeMillis(), MC.theWorld.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ())));
         }
     };
 
     private boolean isBlockPlacePacket(final C08PacketPlayerBlockPlacement packet)
     {
         // ignore interact block packets
-        if (packet.getPosX() == -1
-                && packet.getPosY() == -1
-                && packet.getPosZ() == -1
-                && packet.getSide() == 255)
+        if (packet.func_149576_c() == -1
+                && packet.func_149571_d() == -1
+                && packet.func_149570_e() == -1
+                && packet.func_149568_f() == 255)
         {
             return false;
         }
 
-        ItemStack itemStack = packet.getItemStack();
+        ItemStack itemStack = packet.func_149574_g();
         // resort to the item stack in the server hand
         if (itemStack == null)
         {

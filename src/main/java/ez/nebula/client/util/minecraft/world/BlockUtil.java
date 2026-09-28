@@ -1,6 +1,9 @@
 package ez.nebula.client.util.minecraft.world;
 
 import com.google.common.collect.Lists;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IEnumFacing;
+import ez.nebula.client.mixin.duck.IWorld;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.BlockReed;
@@ -136,7 +139,7 @@ public final class BlockUtil
         for (final EnumFacing face : EnumFacing.values())
         {
             final BlockPos neighbor = pos.offset(face);
-            final EnumFacing opposite = face.getOpposite();
+            final EnumFacing opposite = ((IEnumFacing)(Object)face).nebula$getOpposite();
             if (!isReplaceable(neighbor) && canPlace(neighbor, opposite))
             {
                 return new BlockInfo(neighbor, opposite);
@@ -149,7 +152,7 @@ public final class BlockUtil
             for (final EnumFacing side : EnumFacing.values())
             {
                 final BlockPos neighbor2 = neighbor.offset(side);
-                final EnumFacing opposite = side.getOpposite();
+                final EnumFacing opposite = ((IEnumFacing)(Object)side).nebula$getOpposite();
                 if (!isReplaceable(neighbor2) && canPlace(neighbor2, opposite))
                 {
                     return new BlockInfo(neighbor2, opposite);
@@ -161,7 +164,7 @@ public final class BlockUtil
 
     public static boolean canPlace(final BlockPos pos, final EnumFacing facing)
     {
-        final Block block = MC.theWorld.getBlock(pos);
+        final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
         if (!block.getMaterial().isSolid())
         {
             if (block instanceof BlockReed)
@@ -179,7 +182,7 @@ public final class BlockUtil
             }
         }
 
-        if (!MC.theWorld.checkNoEntityCollision(new AxisAlignedBB(pos.offset(facing))))
+        if (!MC.theWorld.checkNoEntityCollision(IAxisAlignedBB.create(pos.offset(facing))))
         {
             return false;
         }

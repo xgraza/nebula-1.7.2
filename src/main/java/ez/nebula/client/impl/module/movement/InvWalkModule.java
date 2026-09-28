@@ -9,6 +9,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.gui.hud.HUDEditorScreen;
+import ez.nebula.client.mixin.duck.IKeyBinding;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiEditSign;
@@ -81,9 +82,9 @@ public final class InvWalkModule extends Module
         for (final KeyBinding keyBinding : moveKeyBindings)
         {
             final int keyCode = keyBinding.getKeyCode();
-            keyBinding.pressed = keyCode < -MOUSE_KEY_OFFSET
+            ((IKeyBinding)keyBinding).nebula$setPressed(keyCode < -MOUSE_KEY_OFFSET
                     ? Mouse.isButtonDown(keyCode - MOUSE_KEY_OFFSET)
-                    : Keyboard.isKeyDown(keyCode);
+                    : Keyboard.isKeyDown(keyCode));
         }
     };
 

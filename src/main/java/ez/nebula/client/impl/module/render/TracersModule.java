@@ -12,6 +12,7 @@ import ez.nebula.client.api.setting.EnumSetting;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.player.FreecamModule;
+import ez.nebula.client.mixin.duck.IEntityRenderer;
 import ez.nebula.client.util.minecraft.player.EntityUtil;
 import ez.nebula.client.util.render.RenderUtil;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -76,8 +77,13 @@ public final class TracersModule extends Module
     private final EventListener<EventUpdate> updateEventListener = event ->
     {
         renderEntityList.clear();
-        for (final Entity entity : MC.theWorld.loadedEntityList)
+        for (final Object o : MC.theWorld.loadedEntityList)
         {
+            if (!(o instanceof Entity))
+            {
+                continue;
+            }
+            final Entity entity = (Entity)o;
             if (entity instanceof EntityPlayer)
             {
                 if (!playersSetting.getValue())
@@ -135,7 +141,7 @@ public final class TracersModule extends Module
         glLineWidth(lineWidthSetting.getValue());
 
         glLoadIdentity();
-        MC.entityRenderer.orientCamera(event.getPartialTicks());
+        ((IEntityRenderer)MC.entityRenderer).nebula$orientCamera(event.getPartialTicks());
 
         for (final Entity entity : renderEntityList)
         {

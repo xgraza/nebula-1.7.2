@@ -1,6 +1,7 @@
 package ez.nebula.client.api.manager.module.type;
 
 import ez.nebula.client.Nebula;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import ez.nebula.client.util.minecraft.player.ChatUtil;
@@ -16,7 +17,6 @@ import net.minecraft.src.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,8 +44,9 @@ public abstract class InteractionModule extends RotationModule
         final ItemStack stack = Nebula.INVENTORY.stack();
         if (stack == null)
         {
-            ChatUtil.sendNebula("null");
-            PacketUtil.send(new C08PacketPlayerBlockPlacement(null));
+            PacketUtil.send(new C08PacketPlayerBlockPlacement(
+                    -1, -1, -1,
+                    255, null, 0.0f, 0.0f, 0.0f));
             MC.entityRenderer.itemRenderer.resetEquippedProgress();
             return;
         }
@@ -120,7 +121,7 @@ public abstract class InteractionModule extends RotationModule
     protected void click(final BlockPos pos, final EnumFacing face)
     {
         swing();
-        MC.playerController.clickBlock(pos.getX(), pos.getY(), pos.getZ(), face.order_a);
+        MC.playerController.clickBlock(pos.getX(), pos.getY(), pos.getZ(), face.ordinal());
     }
 
     protected boolean breakBlock(final BlockPos pos, final boolean autoSwap)
@@ -151,20 +152,21 @@ public abstract class InteractionModule extends RotationModule
         int slot = -1;
         if (autoSwap)
         {
-            slot = InventoryUtil.getBestToolSlotFor(MC.theWorld.getBlock(pos));
+            slot = InventoryUtil.getBestToolSlotFor(((IWorld)MC.theWorld).nebula$getBlock(pos));
         }
 
         if (slot != -1)
         {
             Nebula.INVENTORY.spoof(slot);
         }
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = true;
+        
+        Nebula.INTERACTIONS.override();
         final boolean result = Nebula.INTERACTIONS.breakBlock(pos, face);
         if (slot != -1 && result)
         {
             Nebula.INVENTORY.sync();
         }
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+        Nebula.INTERACTIONS.restore();
         return result;
     }
 
@@ -172,22 +174,22 @@ public abstract class InteractionModule extends RotationModule
     {
         if (infoList.isEmpty())
         {
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            Nebula.INTERACTIONS.restore();
             return null;
         }
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = true;
+        Nebula.INTERACTIONS.override();
         int broken = 0;
         for (final BlockInfo info : infoList)
         {
             if (broken >= maxBlocks)
             {
-                PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+                Nebula.INTERACTIONS.restore();
                 return null;
             }
             int slot = -1;
             if (autoSwap)
             {
-                slot = InventoryUtil.getBestToolSlotFor(MC.theWorld.getBlock(info.getPos()));
+                slot = InventoryUtil.getBestToolSlotFor(((IWorld)MC.theWorld).nebula$getBlock(info.getPos()));
                 if (slot != -1)
                 {
                     Nebula.INVENTORY.spoof(slot);
@@ -203,11 +205,11 @@ public abstract class InteractionModule extends RotationModule
                 }
             } else
             {
-                PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+                Nebula.INTERACTIONS.restore();
                 return info;
             }
         }
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+        Nebula.INTERACTIONS.restore();
         return null;
     }
 
@@ -215,16 +217,16 @@ public abstract class InteractionModule extends RotationModule
     {
         if (positions.isEmpty())
         {
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            Nebula.INTERACTIONS.restore();
             return null;
         }
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = true;
+        Nebula.INTERACTIONS.override();
         int broken = 0;
         for (final BlockPos pos : positions)
         {
             if (broken >= maxBlocks)
             {
-                PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+                Nebula.INTERACTIONS.restore();
                 return null;
             }
             final EnumFacing face = AngleUtil.getVisibleFace(pos, 6.0);
@@ -236,7 +238,7 @@ public abstract class InteractionModule extends RotationModule
             int slot = -1;
             if (autoSwap)
             {
-                slot = InventoryUtil.getBestToolSlotFor(MC.theWorld.getBlock(pos));
+                slot = InventoryUtil.getBestToolSlotFor(((IWorld)MC.theWorld).nebula$getBlock(pos));
                 if (slot != -1)
                 {
                     Nebula.INVENTORY.spoof(slot);
@@ -252,11 +254,11 @@ public abstract class InteractionModule extends RotationModule
                 }
             } else
             {
-                PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+                Nebula.INTERACTIONS.restore();
                 return new BlockInfo(pos, face);
             }
         }
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+        Nebula.INTERACTIONS.restore();
         return null;
     }
 
@@ -352,7 +354,7 @@ public abstract class InteractionModule extends RotationModule
         {
             return false;
         }
-        return place(new BlockPos(result.blockX, result.blockY, result.blockZ), EnumFacing.faceList[result.sideHit], true);
+        return place(new BlockPos(result.blockX, result.blockY, result.blockZ), EnumFacing.values()[result.sideHit], true);
     }
 
     /**

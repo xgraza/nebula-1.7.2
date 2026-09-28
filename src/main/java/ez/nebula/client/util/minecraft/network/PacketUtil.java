@@ -1,5 +1,6 @@
 package ez.nebula.client.util.minecraft.network;
 
+import ez.nebula.client.mixin.duck.INetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
 
@@ -26,6 +27,6 @@ public final class PacketUtil
 
     public static void sendInstant(final Packet packet)
     {
-        MC.getNetHandler().getNetworkManager().sendPacketInstantly(packet);
+        ((INetworkManager)MC.getNetHandler().getNetworkManager()).nebula$sendPacketInstantly(packet);
     }
 }

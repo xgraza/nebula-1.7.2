@@ -11,6 +11,8 @@ import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.EnumSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IS02PacketChat;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.render.font.Fonts;
 import ez.nebula.client.util.render.world.Render3D;
 import ez.nebula.client.util.text.FormattingUtil;
@@ -103,7 +105,7 @@ public final class TranslateModule extends Module
         if (event.getPacket() instanceof S02PacketChat)
         {
             final S02PacketChat packet = event.getPacket();
-            final IChatComponent component = packet.getMessage();
+            final IChatComponent component = packet.func_148915_c();
             if (!component.getUnformattedText().startsWith("<"))
             {
                 return;
@@ -115,7 +117,7 @@ public final class TranslateModule extends Module
                             new ChatComponentText("Click to translate")
                                     .setChatStyle(new ChatStyle()
                                             .setColor(EnumChatFormatting.BLUE)))));
-            packet.setMessage(c);
+            ((IS02PacketChat)packet).nebula$setMessage(c);
         }
     };
 
@@ -131,7 +133,7 @@ public final class TranslateModule extends Module
         {
             return;
         }
-        final Block block = MC.theWorld.getBlock(pos);
+        final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
         if (block instanceof BlockSign)
         {
             final TileEntity tileEntity = MC.theWorld.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
@@ -142,7 +144,7 @@ public final class TranslateModule extends Module
             final TileEntitySign tileEntitySign = (TileEntitySign)tileEntity;
             signPosTranslateMap.put(pos, "Translating...");
             GoogleTranslateService.INSTANCE.translate(
-                    targetSetting.getValue(), Language.AUTO, String.join(" ", tileEntitySign.lines),
+                    targetSetting.getValue(), Language.AUTO, String.join(" ", tileEntitySign.signText),
                     (source, text) -> signPosTranslateMap.put(pos, text));
         }
     };
@@ -164,7 +166,7 @@ public final class TranslateModule extends Module
                     c.appendText("<" + playerName + ">");
                     c.appendText(" ");
                     c.appendText(text);
-                    MC.ingameGUI.getChatGui().printChatMessage(c);
+                    MC.ingameGUI.getChatGUI().printChatMessage(c);
                 });
     }
 }

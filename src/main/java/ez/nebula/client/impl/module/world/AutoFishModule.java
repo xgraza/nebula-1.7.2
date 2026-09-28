@@ -70,12 +70,12 @@ public final class AutoFishModule extends Module
         if (event.getPacket() instanceof S29PacketSoundEffect)
         {
             final S29PacketSoundEffect packet = event.getPacket();
-            if (!packet.getName().equals(RANDOM_SPLASH))
+            if (!packet.func_149212_c().equals(RANDOM_SPLASH))
             {
                 return;
             }
             final EntityFishHook entity = MC.thePlayer.fishEntity;
-            if (entity.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 1.0)
+            if (entity.getDistance(packet.func_149207_d(), packet.func_149211_e(), packet.func_149210_f()) <= 1.0)
             {
                 cast();
             }
@@ -109,8 +109,8 @@ public final class AutoFishModule extends Module
             float itemScore = 0.0f;
 
             itemScore += ItemUtil.getEnchantLevelNoLimit(Enchantment.unbreaking, stack) * 1.5f;
-            itemScore += ItemUtil.getEnchantLevelNoLimit(Enchantment.luckOfTheSea, stack) * 5.5f;
-            itemScore += ItemUtil.getEnchantLevelNoLimit(Enchantment.lure, stack) * 2.2f;
+            itemScore += ItemUtil.getEnchantLevelNoLimit(Enchantment.field_151370_z, stack) * 5.5f;
+            itemScore += ItemUtil.getEnchantLevelNoLimit(Enchantment.field_151369_A, stack) * 2.2f;
 
             if (itemScore > score || slot == -1)
             {

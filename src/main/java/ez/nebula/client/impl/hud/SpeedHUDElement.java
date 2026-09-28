@@ -4,6 +4,7 @@ import ez.nebula.client.Nebula;
 import ez.nebula.client.api.manager.hud.HUDElement;
 import ez.nebula.client.api.manager.hud.trait.HUDManifest;
 import ez.nebula.client.impl.module.render.HUDModule;
+import ez.nebula.client.mixin.duck.IMinecraft;
 import ez.nebula.client.util.render.font.Fonts;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.EnumChatFormatting;
@@ -29,7 +30,7 @@ public final class SpeedHUDElement extends HUDElement
     {
         final double moveDelta = Nebula.MOVEMENT.getMoveSpeed();
         double speed = (moveDelta / 1000) / (0.05 / 3600);
-        speed *= MC.timer.timerSpeed;
+        speed *= ((IMinecraft)MC).nebula$getTimer().timerSpeed;
         speed /= 3.6;
         final String formatted = String.format("Speed: %s%.2f BPS",
                 EnumChatFormatting.GRAY, speed);

@@ -16,6 +16,9 @@ import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.combat.AutoBedModule;
 import ez.nebula.client.impl.module.combat.KillAuraModule;
 import ez.nebula.client.impl.module.player.AutoEatModule;
+import ez.nebula.client.mixin.duck.IBlock;
+import ez.nebula.client.mixin.duck.IEnumFacing;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
 import ez.nebula.client.util.minecraft.world.BlockInfo;
@@ -119,7 +122,7 @@ public final class AutoTunnelModule extends InteractionModule
                 }
                 final int slot = InventoryUtil.getHotbarSlot(
                         (stack) -> stack.getItem() instanceof ItemBlock
-                                && ((ItemBlock) stack.getItem()).getBlock().getMaterial().isSolid());
+                                && ((ItemBlock) stack.getItem()).field_150939_a.getMaterial().isSolid());
                 if (slot == InventoryUtil.INVALID_SLOT)
                 {
                     break;
@@ -178,12 +181,12 @@ public final class AutoTunnelModule extends InteractionModule
         for (int i = 1; i < lengthSetting.getValue() + 1; ++i)
         {
             BlockPos pos = origin.offset(facing, i);
-            if (BlockUtil.isNotAir(pos) && MC.theWorld.getBlock(pos).blockHardness != -1.0f)
+            if (BlockUtil.isNotAir(pos) && ((IBlock)((IWorld)MC.theWorld).nebula$getBlock(pos)).nebula$getBlockHardness() != -1.0f)
             {
                 blockPosList.add(pos);
             }
             pos = pos.up();
-            if (BlockUtil.isNotAir(pos) && MC.theWorld.getBlock(pos).blockHardness != -1.0f)
+            if (BlockUtil.isNotAir(pos) && ((IBlock)((IWorld)MC.theWorld).nebula$getBlock(pos)).nebula$getBlockHardness() != -1.0f)
             {
                 blockPosList.add(pos);
             }
@@ -193,7 +196,7 @@ public final class AutoTunnelModule extends InteractionModule
 
     private boolean isBlockBehindPlayer(final BlockPos pos)
     {
-        final BlockPos vec = PlayerUtil.getFacing().getFaceOffset();
+        final BlockPos vec = ((IEnumFacing)(Object)PlayerUtil.getFacing()).nebula$getFaceOffset();
         int delta = 0;
         int axis = 0;
         if (vec.getX() != 0)

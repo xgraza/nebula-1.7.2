@@ -2,6 +2,9 @@ package ez.nebula.client.impl.hud2;
 
 import ez.nebula.client.api.manager.hud2.trait.HUDManifest;
 import ez.nebula.client.api.manager.hud2.type.TextHUDElement;
+import ez.nebula.client.mixin.duck.IMinecraft;
+import ez.nebula.client.util.minecraft.player.ChatUtil;
+import ez.nebula.client.util.text.FormattingUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -15,10 +18,10 @@ public final class FPSHUDElement extends TextHUDElement
     @Override
     public String text()
     {
-        return EnumChatFormatting.NEBULA_CLIENT_COLOR
+        return ChatUtil.NEBULA_CLIENT_COLOR
                 + "FPS: "
                 + EnumChatFormatting.GRAY
-                + Minecraft.debugFPS
+                + ((IMinecraft)MC).nebula$getDebugFPS()
                 + (!MC.inGameHasFocus ? " [idle]" : "");
     }
 }

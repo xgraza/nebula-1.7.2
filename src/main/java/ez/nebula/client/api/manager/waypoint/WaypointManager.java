@@ -43,7 +43,7 @@ public final class WaypointManager implements ITypedManager<Waypoint>
         }
 
         // TODO: this doesnt work if you super quickly press F2
-        if (WaypointsModule.INSTANCE.antiScreenshotSetting.getValue() && MC.gameSettings.keyBindScreenshot.pressed)
+        if (WaypointsModule.INSTANCE.antiScreenshotSetting.getValue() && MC.gameSettings.keyBindScreenshot.getIsKeyPressed())
         {
             return;
         }

@@ -3,6 +3,7 @@ package ez.nebula.client.impl.hud;
 import ez.nebula.client.api.manager.hud.HUDElement;
 import ez.nebula.client.api.manager.hud.trait.HUDManifest;
 import ez.nebula.client.util.render.font.Fonts;
+import ez.nebula.client.util.render.gui.Render2D;
 import ez.nebula.client.util.text.FormattingUtil;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -30,8 +31,14 @@ public final class PotionStatusHUDElement extends HUDElement
     public void render(final ScaledResolution res)
     {
         double posY = getY() + getHeight() - (getPadding() * 2);
-        for (final PotionEffect effect : MC.thePlayer.getActivePotionEffects())
+        for (final Object o : MC.thePlayer.getActivePotionEffects())
         {
+            if (!(o instanceof PotionEffect))
+            {
+                continue;
+            }
+            final PotionEffect effect = (PotionEffect) o;
+
             final String formatted = String.format("%s %s%s: %s",
                     I18n.format(effect.getEffectName()),
                     FormattingUtil.formatRomanNumeral(effect.getAmplifier() + 1),
@@ -58,7 +65,7 @@ public final class PotionStatusHUDElement extends HUDElement
                 MC.getTextureManager().bindTexture(CONTAINER_LOCATION);
                 glTranslated(posX - (getPadding() * 2) - 9, posY + (getPadding() * 2), 0.0);
                 glScaled(0.5, 0.5, 0.5);
-                Gui.drawTexturedModalRectX(0, 0, iconIndex % 8 * 18, 198 + iconIndex / 8 * 18, 18, 18);
+                Render2D.drawTexturedModalRectX(0, 0, iconIndex % 8 * 18, 198 + iconIndex / 8 * 18, 18, 18);
                 glPopMatrix();
             }
         }

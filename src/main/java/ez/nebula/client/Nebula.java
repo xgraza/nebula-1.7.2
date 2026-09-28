@@ -1,6 +1,5 @@
 package ez.nebula.client;
 
-import com.github.lunatrius.schematica.Schematica;
 import ez.nebula.client.api.config.ConfigManager;
 import ez.nebula.client.api.manager.account.AccountManager;
 import ez.nebula.client.api.manager.command.CommandManager;
@@ -9,6 +8,7 @@ import ez.nebula.client.api.manager.hud.HUDManager;
 import ez.nebula.client.api.manager.hud2.HUDElementManager;
 import ez.nebula.client.api.manager.key.KeyManager;
 import ez.nebula.client.api.manager.module.ModuleManager;
+import ez.nebula.client.api.manager.plugin.PluginManager;
 import ez.nebula.client.api.manager.toast.ToastManager;
 import ez.nebula.client.api.manager.waypoint.WaypointManager;
 import ez.nebula.client.api.player.InteractionManager;
@@ -16,12 +16,10 @@ import ez.nebula.client.api.player.movement.MovementManager;
 import ez.nebula.client.api.player.server.InventoryManager;
 import ez.nebula.client.api.player.server.RotationManager;
 import ez.nebula.client.api.player.server.ServerManager;
-import ez.nebula.client.api.manager.plugin.PluginManager;
 import ez.nebula.client.api.tray.SystemNotifications;
 import ez.nebula.client.impl.gui.startup.LoadingScreen;
 import ez.nebula.client.util.render.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.SplashTextProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -47,7 +45,7 @@ public final class Nebula
 {
     private static final Logger LOGGER = LogManager.getLogger(BuildConfig.NAME);
     private static final ResourceLocation NEBULA_SPLASH_TEXT_RESOURCE = new ResourceLocation(
-            "nebula", "splashs.txt");
+            "assets/nebula", "splashs.txt");
 
     /**
      * The current Nebula version based on SemVer specifications
@@ -107,13 +105,12 @@ public final class Nebula
      */
     public static void init(final File gameDir)
     {
-        System.out.println();
         logBuildInfo();
 
         LoadingScreen.setTotalLoadingStages(12);
         LoadingScreen.setStage(1, "Pre-initialization");
         createNebulaDirectories(gameDir);
-        SplashTextProvider.addSplashTextProvider(NEBULA_SPLASH_TEXT_RESOURCE);
+        //SplashTextProvider.addSplashTextProvider(NEBULA_SPLASH_TEXT_RESOURCE);
 
         LoadingScreen.setStage(3, "Initializing Nebula Client...");
         long endTime;
@@ -134,7 +131,7 @@ public final class Nebula
         WAYPOINTS.init();
         MOVEMENT.init();
         SystemNotifications.init();
-        Schematica.load();
+        // Schematica.load();
 
         try
         {
@@ -183,7 +180,7 @@ public final class Nebula
             Display.setTitle(title);
         } else
         {
-            Minecraft.setTitle(title);
+            Minecraft.func_147105_a(title);
         }
     }
 

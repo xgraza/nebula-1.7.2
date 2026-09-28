@@ -71,7 +71,7 @@ public final class AntiRevertModule extends Module
         } else if (event.getPacket() instanceof C07PacketPlayerDigging)
         {
             final C07PacketPlayerDigging packet = event.getPacket();
-            if ((packet.getAction() == 3 || packet.getAction() == 4)
+            if ((packet.func_149506_g() == 3 || packet.func_149506_g() == 4)
                     && antiDropSetting.getValue()
                     && ItemUtil.isIllegal(MC.thePlayer.getHeldItem()))
             {

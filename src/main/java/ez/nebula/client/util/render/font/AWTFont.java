@@ -1,6 +1,7 @@
 package ez.nebula.client.util.render.font;
 
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -11,6 +12,8 @@ import java.awt.font.GlyphMetrics;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import static java.awt.RenderingHints.*;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
@@ -23,7 +26,7 @@ import static org.lwjgl.opengl.GL11.*;
 public final class AWTFont
 {
     private final Font font;
-    private final DynamicTexture glyphTexture;
+    private final int glyphTexture;
     private final Glyph[] glyphBin;
     private double spaceWidth, fontHeight;
 
@@ -62,7 +65,7 @@ public final class AWTFont
         return glyphBin[codePoint];
     }
 
-    private DynamicTexture createGlyphTextureMap()
+    private int createGlyphTextureMap()
     {
         final BufferedImage image = new BufferedImage(1000, 512, TYPE_INT_ARGB);
 
@@ -108,10 +111,33 @@ public final class AWTFont
             graphics.drawString(String.valueOf(c), x, y + metrics.getAscent());
             x += (float) glyph.getWidth() + 8.0f;
         }
-        return new DynamicTexture(image);
+
+        // 1. Convert BufferedImage data into a raw array
+        int[] pixels = new int[image.getWidth() * image.getHeight()];
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+        // 2. Allocate an independent, direct ByteBuffer
+        ByteBuffer buffer = ByteBuffer.allocateDirect(pixels.length * 4);
+        buffer.order(ByteOrder.nativeOrder());
+        for (int pixel : pixels){
+            buffer.put((byte) ((pixel >> 16) & 0xFF)); // R
+        buffer.put((byte) ((pixel >> 8) & 0xFF));  // G
+        buffer.put((byte) (pixel & 0xFF));         // B
+        buffer.put((byte) ((pixel >> 24) & 0xFF)); // A
+    }
+    buffer.flip();
+
+    // 3. Bind natively straight to GPU
+    int textureId = GL11.glGenTextures();
+    GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+    GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+    GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+    GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+
+    return textureId;
     }
 
-    public DynamicTexture getGlyphTexture()
+    public int getGlyphTexture()
     {
         return glyphTexture;
     }

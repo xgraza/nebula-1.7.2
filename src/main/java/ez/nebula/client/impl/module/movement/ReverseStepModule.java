@@ -7,6 +7,7 @@ import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
+import ez.nebula.client.mixin.duck.IEntity;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
 import net.minecraft.util.AxisAlignedBB;
 
@@ -39,9 +40,9 @@ public final class ReverseStepModule extends Module
                 || MC.thePlayer.isInWater()
                 || PlayerUtil.isAboveWater()
                 || PlayerUtil.isPhased()
-                || MC.thePlayer.isInWeb
+                || ((IEntity)MC.thePlayer).nebula$getIsInWeb()
                 || MC.thePlayer.isOnLadder()
-                || MC.gameSettings.keyBindJump.pressed)
+                || MC.gameSettings.keyBindJump.getIsKeyPressed())
         {
             return;
         }

@@ -10,6 +10,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IMinecraft;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
@@ -51,7 +52,7 @@ public final class InteractModule extends Module
 
     @Subscribe
     private final EventListener<EventUpdate> updateEventListener = event ->
-            MC.rightClickDelayTimer = placeDelaySetting.getValue();
+            ((IMinecraft)MC).nebula$setRightClickDelayTimer(placeDelaySetting.getValue());
 
     @Subscribe
     private final EventListener<EventLiquidCollide> liquidCollideEventListener = event ->

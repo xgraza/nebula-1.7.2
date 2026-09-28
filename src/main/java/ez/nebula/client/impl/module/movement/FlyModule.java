@@ -11,6 +11,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.EnumSetting;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IPlayerControllerMP;
 import ez.nebula.client.util.minecraft.player.MoveUtil;
 import ez.nebula.client.util.text.FormattingUtil;
 import net.minecraft.network.play.client.C13PacketPlayerAbilities;
@@ -90,10 +91,10 @@ public final class FlyModule extends Module
                 MoveUtil.setSpeed(event, speedSetting.getValue());
             }
 
-            if (MC.gameSettings.keyBindJump.pressed)
+            if (MC.gameSettings.keyBindJump.getIsKeyPressed())
             {
                 MC.thePlayer.motionY = speedSetting.getValue();
-            } else if (MC.gameSettings.keyBindSneak.pressed)
+            } else if (MC.gameSettings.keyBindSneak.getIsKeyPressed())
             {
                 MC.thePlayer.motionY = -speedSetting.getValue();
             } else
@@ -111,14 +112,14 @@ public final class FlyModule extends Module
         if (event.getPacket() instanceof C13PacketPlayerAbilities && modeSetting.getValue() == Mode.CREATIVE)
         {
             final C13PacketPlayerAbilities packet = event.getPacket();
-            if (MC.playerController.currentGameType != WorldSettings.GameType.CREATIVE)
+            if (((IPlayerControllerMP)MC.playerController).nebula$getCurrentGameType() != WorldSettings.GameType.CREATIVE)
             {
-                packet.setCreativeMode(false);
-                packet.setFlying(false);
-                packet.setAllowFlying(false);
+                packet.func_149493_d(false);
+                packet.func_149483_b(false);
+                packet.func_149491_c(false);
             }
-            packet.setFlySpeed(0.05f);
-            packet.setWalkSpeed(0.1f);
+            packet.func_149485_a(0.05f);
+            packet.func_149492_b(0.1f);
         }
     };
 

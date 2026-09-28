@@ -146,12 +146,14 @@ public final class ESPModule extends Module
         }
 
         renderTargetList.clear();
-        for (final Entity bEntity : MC.theWorld.loadedEntityList)
+        for (final Object o : MC.theWorld.loadedEntityList)
         {
-            if (bEntity == null
-                    || bEntity.isDead
-                    || bEntity.equals(MC.thePlayer)
-                    || bEntity.getEntityId() == FreecamModule.CAMERA_ENTITY_ID)
+            if (!(o instanceof Entity))
+            {
+                continue;
+            }
+            final Entity bEntity = (Entity)o;
+            if (bEntity.isDead || bEntity.equals(MC.thePlayer) || bEntity.getEntityId() == FreecamModule.CAMERA_ENTITY_ID)
             {
                 continue;
             }
@@ -166,8 +168,13 @@ public final class ESPModule extends Module
             }
         }
 
-        for (final TileEntity entity : MC.theWorld.loadedTileEntityList)
+        for (final Object o : MC.theWorld.loadedTileEntityList)
         {
+            if (!(o instanceof TileEntity))
+            {
+                continue;
+            }
+            final TileEntity entity = (TileEntity)o;
             if (modeSetting.getValue() == Mode.CS_GO)
             {
                 if (entity instanceof TileEntityChest && chestsSetting.getValue())
@@ -255,8 +262,8 @@ public final class ESPModule extends Module
 
         glDisable(GL_CULL_FACE);
 
-        final boolean renderShadows = Render.renderShadow;
-        Render.renderShadow = false;
+//        final boolean renderShadows = Render.renderShadow;
+//        Render.renderShadow = false;
 
         MC.mcProfiler.startSection("fb");
         if (fb != null)
@@ -335,7 +342,7 @@ public final class ESPModule extends Module
 
         MC.entityRenderer.enableLightmap(0);
 
-        Render.renderShadow = renderShadows;
+//        Render.renderShadow = renderShadows;
 
         glDepthMask(true);
         glEnable(GL_CULL_FACE);
@@ -375,8 +382,13 @@ public final class ESPModule extends Module
             Object gEntity = MC.theWorld.getEntityByID(entityID);
             if (gEntity == null)
             {
-                for (final TileEntity tileEntity : MC.theWorld.loadedTileEntityList)
+                for (final Object o : MC.theWorld.loadedTileEntityList)
                 {
+                    if (!(o instanceof TileEntity))
+                    {
+                        continue;
+                    }
+                    final TileEntity tileEntity = (TileEntity)o;
                     if (tileEntity.hashCode() == entityID)
                     {
                         gEntity = tileEntity;
@@ -515,14 +527,14 @@ public final class ESPModule extends Module
 
             double o = e.width - 0.25;
 
-            aabb = new AxisAlignedBB(x - o, y - 0.2, z - o,
+            aabb = AxisAlignedBB.getBoundingBox(x - o, y - 0.2, z - o,
                     x + o,
                     y + e.height + 0.2,
                     z + o);
         } else if (entity instanceof TileEntity)
         {
             final TileEntity e = (TileEntity) entity;
-            aabb = new AxisAlignedBB(e.xCoord, e.yCoord, e.zCoord,
+            aabb = AxisAlignedBB.getBoundingBox(e.xCoord, e.yCoord, e.zCoord,
                     e.xCoord + 1,
                     e.yCoord + 1,
                     e.zCoord + 1);

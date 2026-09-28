@@ -1,0 +1,16 @@
+[
+{
+  "modid": "nebula_client",
+  "name": "Nebula",
+  "description": "A 1.7.2 Minecraft Utility Client made for Alfheim.pw",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/xgraza/nebula-1.7.2",
+  "updateUrl": "",
+  "authorList": ["xgraza"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

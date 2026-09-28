@@ -22,7 +22,7 @@ import net.minecraft.util.AxisAlignedBB;
         category = ModuleCategory.PLAYER)
 public final class AntiBlockModule extends Module
 {
-    private static final AxisAlignedBB FULL_BLOCK_AABB = new AxisAlignedBB(
+    private static final AxisAlignedBB FULL_BLOCK_AABB = AxisAlignedBB.getBoundingBox(
             0, 0, 0, 1, 1, 1);
 
     private final Setting<Boolean> exemptSneaking = builder("Exempt Sneak", false)
@@ -50,7 +50,7 @@ public final class AntiBlockModule extends Module
         {
             return;
         }
-        if (exemptSneaking.getValue() && MC.gameSettings.keyBindSneak.pressed)
+        if (exemptSneaking.getValue() && MC.gameSettings.keyBindSneak.getIsKeyPressed())
         {
             return;
         }

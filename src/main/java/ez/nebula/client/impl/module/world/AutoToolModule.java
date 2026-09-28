@@ -6,6 +6,7 @@ import ez.nebula.client.api.listener.event.player.EventAttackBlock;
 import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
+import ez.nebula.client.mixin.duck.IBlock;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -27,7 +28,7 @@ public final class AutoToolModule extends Module
             return;
         }
         final Block block = MC.theWorld.getBlock(event.getX(), event.getY(), event.getZ());
-        if (block == Blocks.air || block.blockHardness == -1.0f)
+        if (block == Blocks.air || ((IBlock)block).nebula$getBlockHardness() == -1.0f)
         {
             return;
         }

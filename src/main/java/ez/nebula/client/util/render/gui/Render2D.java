@@ -2,6 +2,7 @@ package ez.nebula.client.util.render.gui;
 
 import ez.nebula.client.impl.module.render.ClickGUIModule;
 import ez.nebula.client.impl.module.render.GlintModule;
+import ez.nebula.client.mixin.duck.IRenderItem;
 import ez.nebula.client.util.render.RenderUtil;
 import ez.nebula.client.util.render.shader.Shader;
 import net.minecraft.client.Minecraft;
@@ -353,7 +354,7 @@ public final class Render2D
             {
                 glColor4f(0.5F, 0.25F, 0.8F, 1.0F);
             }
-            RENDER_ITEM.renderGlint(x * 431278612 + -26 * 32178161, x - 2, -26 - 2, 20, 20);
+            ((IRenderItem)RENDER_ITEM).nebula$renderGlint(x * 431278612 + -26 * 32178161, x - 2, -26 - 2, 20, 20);
             glDepthMask(true);
             glDisable(GL_ALPHA_TEST);
             glEnable(GL_LIGHTING);
@@ -363,6 +364,19 @@ public final class Render2D
 
         RenderHelper.disableStandardItemLighting();
         glPopMatrix();
+    }
+
+    public static void drawTexturedModalRectX(int par1, int par2, int par3, int par4, int par5, int par6)
+    {
+        float var7 = 0.00390625F;
+        float var8 = 0.00390625F;
+        Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV((double)(par1 + 0), (double)(par2 + par6), 0, (double)((float)(par3 + 0) * var7), (double)((float)(par4 + par6) * var8));
+        var9.addVertexWithUV((double)(par1 + par5), (double)(par2 + par6), 0, (double)((float)(par3 + par5) * var7), (double)((float)(par4 + par6) * var8));
+        var9.addVertexWithUV((double)(par1 + par5), (double)(par2 + 0), 0, (double)((float)(par3 + par5) * var7), (double)((float)(par4 + 0) * var8));
+        var9.addVertexWithUV((double)(par1 + 0), (double)(par2 + 0), 0, (double)((float)(par3 + 0) * var7), (double)((float)(par4 + 0) * var8));
+        var9.draw();
     }
 
     /**

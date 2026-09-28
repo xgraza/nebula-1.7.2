@@ -7,13 +7,15 @@ import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.player.EventSneak;
 import ez.nebula.client.impl.module.player.NoSwingModule;
 import ez.nebula.client.impl.module.world.PacketMineModule;
+import ez.nebula.client.mixin.duck.IEntityClientPlayerMP;
+import ez.nebula.client.mixin.duck.IMinecraft;
+import ez.nebula.client.mixin.duck.IPlayerControllerMP;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
-import ez.nebula.client.util.minecraft.player.ChatUtil;
 import ez.nebula.client.util.minecraft.world.BlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.src.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -27,6 +29,7 @@ import net.minecraft.util.Vec3;
 public final class InteractionManager
 {
     private static final Minecraft MC = Minecraft.getMinecraft();
+    private static boolean ALLOW_BREAK_OVERRIDE = false;
 
     private boolean overrideSneak, sneaking;
 
@@ -42,7 +45,7 @@ public final class InteractionManager
         {
             return;
         }
-        MC.thePlayer.serverSneaking = sneaking;
+        ((IEntityClientPlayerMP)MC.thePlayer).nebula$setWasSneaking(sneaking);
         event.setState(sneaking);
     };
 
@@ -56,10 +59,10 @@ public final class InteractionManager
                                    final EnumFacing facing,
                                    final boolean sneak)
     {
-        MC.rightClickDelayTimer = 4;
+        ((IMinecraft) MC).nebula$setRightClickDelayTimer(4);
 
         final boolean sneakPacket = sneak
-                && BlockUtil.INTERACTABLE_BLOCK_LIST.contains(MC.theWorld.getBlock(pos));
+                && BlockUtil.INTERACTABLE_BLOCK_LIST.contains(((IWorld)MC.theWorld).nebula$getBlock(pos));
                 //&& !MC.thePlayer.serverSneaking;
         overrideSneak = sneaking = sneakPacket;
         if (sneakPacket)
@@ -70,7 +73,7 @@ public final class InteractionManager
         final boolean result = MC.playerController.onPlayerRightClick(MC.thePlayer,
                 MC.theWorld,
                 Nebula.INVENTORY.stack(),
-                pos.getX(), pos.getY(), pos.getZ(), facing.order_a,
+                pos.getX(), pos.getY(), pos.getZ(), facing.ordinal(),
                 createHitVec(pos, facing));
         if (result)
         {
@@ -94,15 +97,15 @@ public final class InteractionManager
         final Block block = MC.theWorld.getBlock(x, y, z);
         if (block == null || block.getMaterial() == Material.air)
         {
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            restore();
             return true;
         }
 
-        MC.playerController.blockHitDelay = 0;
+        ((IPlayerControllerMP)MC.playerController).nebula$setBlockHitDelay(0);
 
-        if (!MC.playerController.sameToolAndBlock(x, y, z))
+        if (!((IPlayerControllerMP)MC.playerController).nebula$sameToolAndBlock(x, y, z))
         {
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = true;
+            override();
             MC.playerController.resetBlockRemoving();
             MC.playerController.clickBlock(x, y, z, face);
             swingItem();
@@ -110,53 +113,69 @@ public final class InteractionManager
             // this is from inside PlayerControllerMP#clickBlock, however since clickBlock doesn't return a bool...
             if (block.getPlayerRelativeBlockHardness(MC.thePlayer, MC.theWorld, x, y, z) >= 1.0F)
             {
-                PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+                restore();
                 return true;
             }
         }
 
         if (PacketMineModule.INSTANCE.isToggled())
         {
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            restore();
             return false;
         }
 
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = true;
+        override();
         MC.playerController.onPlayerDamageBlock(x, y, z, face);
         if (MC.thePlayer.isCurrentToolAdventureModeExempt(x, y, z))
         {
             MC.effectRenderer.addBlockHitEffects(x, y, z, face);
             swingItem();
         }
-        boolean brokeBlock = MC.playerController.curBlockDamageMP >= 1.0f;
+        boolean brokeBlock = ((IPlayerControllerMP)MC.playerController).nebula$getCurBlockDamageMP() >= 1.0f;
         if (brokeBlock)
         {
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            restore();
         }
         return brokeBlock;
     }
 
     public boolean breakBlock(final BlockPos pos, final EnumFacing facing)
     {
-        return breakBlock(pos.getX(), pos.getY(), pos.getZ(), facing.order_a);
+        return breakBlock(pos.getX(), pos.getY(), pos.getZ(), facing.ordinal());
     }
 
     public void swingItem()
     {
         if (NoSwingModule.INSTANCE.isToggled())
         {
-            MC.thePlayer.swingItemSilent();
+            MC.thePlayer.swingItem();
+            // MC.thePlayer.swingItemSilent();
         } else
         {
             MC.thePlayer.swingItem();
         }
     }
 
+    public void override()
+    {
+        ALLOW_BREAK_OVERRIDE = true;
+    }
+
+    public void restore()
+    {
+        ALLOW_BREAK_OVERRIDE = false;
+    }
+
+    public boolean isOverrideBreak()
+    {
+        return ALLOW_BREAK_OVERRIDE;
+    }
+
     private Vec3 createHitVec(final BlockPos pos, final EnumFacing facing)
     {
-        final double faceX = facing.getFaceX() / 2.0;
-        final double faceY = facing.getFaceY() / 2.0;
-        final double faceZ = facing.getFaceZ() / 2.0;
+        final double faceX = facing.getFrontOffsetX() / 2.0;
+        final double faceY = facing.getFrontOffsetY() / 2.0;
+        final double faceZ = facing.getFrontOffsetZ() / 2.0;
         return Vec3.createVectorHelper(pos.getX() + faceX,
                 pos.getY() + faceY,
                 pos.getZ() + faceZ);

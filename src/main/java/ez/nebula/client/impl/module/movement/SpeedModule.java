@@ -15,6 +15,8 @@ import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.EnumSetting;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IMinecraft;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.minecraft.player.MoveUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
 import net.minecraft.block.Block;
@@ -86,7 +88,7 @@ public final class SpeedModule extends Module
     public void onDisable()
     {
         super.onDisable();
-        MC.timer.timerSpeed = 1.0f;
+        ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.0f;
         boost = false;
         ticksSinceSetback = 0;
         strafeStage = 0;
@@ -101,14 +103,14 @@ public final class SpeedModule extends Module
                 || --ticksSinceSetback > 0
                 || !timerSetting.getValue())
         {
-            MC.timer.timerSpeed = 1.0f;
+            ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.0f;
         }
 
         if (modeSetting.getValue() == Mode.Y_PORT)
         {
             if (ticksSinceSetback > 0)
             {
-                MC.timer.timerSpeed = 1.0f;
+                ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.0f;
                 return;
             }
 
@@ -123,16 +125,16 @@ public final class SpeedModule extends Module
                 {
                     if (MC.thePlayer.ticksExisted % 10 == 0)
                     {
-                        MC.timer.timerSpeed = 1.35f;
+                        ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.35f;
                     } else
                     {
-                        MC.timer.timerSpeed = boost ? 1.088f : 1.077f;
+                        ((IMinecraft)MC).nebula$getTimer().timerSpeed = boost ? 1.088f : 1.077f;
                     }
 
                     moveSpeed *= boost ? 1.23 : 1.14;
                 } else
                 {
-                    MC.timer.timerSpeed = 1.0f;
+                    ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.0f;
                     moveSpeed *= boost ? 1.25 : 1.16;
                 }
             } else
@@ -142,7 +144,7 @@ public final class SpeedModule extends Module
                 {
                     MC.thePlayer.motionY = -4.0;
                 }
-                MC.timer.timerSpeed = 1.0f;
+                ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.0f;
             }
 
             MoveUtil.setSpeed(null, MoveUtil.isMoving() ? moveSpeed : 0.0);
@@ -169,10 +171,10 @@ public final class SpeedModule extends Module
             {
                 if (MoveUtil.isMoving())
                 {
-                    MC.timer.timerSpeed = boost ? 1.06f : 1.079f;
+                    ((IMinecraft)MC).nebula$getTimer().timerSpeed = boost ? 1.06f : 1.079f;
                 } else
                 {
-                    MC.timer.timerSpeed = 1.0f;
+                    ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.0f;
                 }
             }
 
@@ -273,7 +275,7 @@ public final class SpeedModule extends Module
     private double getGroundFriction()
     {
         final BlockPos pos = PlayerUtil.getOrigin().down();
-        final Block block = MC.theWorld.getBlock(pos);
+        final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
         if (block == Blocks.ice || block == Blocks.packed_ice)
         {
             return 1.7;

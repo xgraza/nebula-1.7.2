@@ -1,6 +1,7 @@
 package ez.nebula.client.impl.gui.clickgui.component.value.block;
 
 import ez.nebula.client.api.setting.block.BlockValue;
+import ez.nebula.client.mixin.duck.IRegistryNamespaced;
 import ez.nebula.client.util.render.font.Fonts;
 import ez.nebula.client.util.render.gui.Render2D;
 import ez.nebula.client.util.render.gui.trait.GUIComponent;
@@ -290,8 +291,14 @@ public class BlockSearchComponent extends GUIComponent implements IGUIInputListe
         }
 
         String str = text.trim().toLowerCase();
-        for (final String s : Block.blockRegistry.objectNameMap.values())
+        for (final Object o : ((IRegistryNamespaced)Block.blockRegistry).nebula$getMap().values())
         {
+            if (!(o instanceof String))
+            {
+                continue;
+            }
+            final String s = (String) o;
+
             final String blockName = s.replace("_", "").toLowerCase();
             if (blockName.contains(str) || blockName.startsWith(str) || blockName.endsWith(str))
             {

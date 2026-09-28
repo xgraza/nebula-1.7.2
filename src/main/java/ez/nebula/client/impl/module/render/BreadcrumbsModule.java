@@ -10,6 +10,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.ColorSetting;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.INetHandlerPlayClient;
 import ez.nebula.client.util.math.MathUtil;
 import ez.nebula.client.util.render.RenderUtil;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -92,8 +93,13 @@ public final class BreadcrumbsModule extends Module
     private final EventListener<EventRender3D> render3DEventListener = event ->
     {
         MC.mcProfiler.startSection("breadCrumbs");
-        for (final Entity entity : MC.theWorld.loadedEntityList)
+        for (final Object o : MC.theWorld.loadedEntityList)
         {
+            if (!(o instanceof Entity))
+            {
+                continue;
+            }
+            final Entity entity = (Entity)o;
             if (isValidEntity(entity))
             {
                 final List<Breadcrumb> breadcrumbList = entityBreadcrumbMap.computeIfAbsent(
@@ -180,7 +186,7 @@ public final class BreadcrumbsModule extends Module
 
     private boolean isValidEntity(final Entity entity)
     {
-        if (!MC.getNetHandler().doneLoadingTerrain)
+        if (!((INetHandlerPlayClient)MC.getNetHandler()).nebula$getDoneLoadingTerrain())
         {
             return false;
         }

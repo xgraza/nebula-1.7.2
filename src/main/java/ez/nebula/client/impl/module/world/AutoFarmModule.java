@@ -11,6 +11,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
 import net.minecraft.block.*;
@@ -112,7 +113,7 @@ public final class AutoFarmModule extends Module
         oldSlot = InventoryUtil.INVALID_SLOT;
         melonBreakPos = null;
         plantTypeAtBlockMap.clear();
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+        Nebula.INTERACTIONS.restore();
     }
 
     @Subscribe
@@ -120,7 +121,7 @@ public final class AutoFarmModule extends Module
     {
         if (melonBreakPos != null)
         {
-            final Block block = MC.theWorld.getBlock(melonBreakPos);
+            final Block block = ((IWorld)MC.theWorld).nebula$getBlock(melonBreakPos);
             if ((block == Blocks.melon_block || block == Blocks.pumpkin)
                     && !Nebula.INTERACTIONS.breakBlock(melonBreakPos, EnumFacing.DOWN))
             {
@@ -143,7 +144,7 @@ public final class AutoFarmModule extends Module
 
         if (plantTypeAtBlockMap.isEmpty())
         {
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            Nebula.INTERACTIONS.restore();
             return;
         }
 
@@ -165,7 +166,7 @@ public final class AutoFarmModule extends Module
             }
 
             final BlockPos cropBlockPos = pos.up();
-            final Block block = MC.theWorld.getBlock(cropBlockPos);
+            final Block block = ((IWorld)MC.theWorld).nebula$getBlock(cropBlockPos);
 
             if (block == Blocks.air)
             {
@@ -232,7 +233,7 @@ public final class AutoFarmModule extends Module
             }
         }
 
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+        Nebula.INTERACTIONS.restore();
     };
 
     @Subscribe
@@ -241,9 +242,9 @@ public final class AutoFarmModule extends Module
         if (event.getPacket() instanceof S23PacketBlockChange && packetScanSetting.getValue())
         {
             final S23PacketBlockChange packet = event.getPacket();
-            final Block packetBlock = packet.getType();
-            BlockPos pos = new BlockPos(packet.getX(), packet.getY(), packet.getZ());
-            final Block block = MC.theWorld.getBlock(pos);
+            final Block packetBlock = packet.func_148880_c();
+            BlockPos pos = new BlockPos(packet.func_148879_d(), packet.func_148878_e(), packet.func_148877_f());
+            final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
 
             if (block instanceof BlockFarmland && !(packetBlock instanceof BlockFarmland))
             {
@@ -258,7 +259,7 @@ public final class AutoFarmModule extends Module
                     && !(packetBlock instanceof BlockReed))
             {
                 // ChatUtil.send("Caching new crop @ %s", pos);
-                plantTypeAtBlockMap.put(pos, packet.getType());
+                plantTypeAtBlockMap.put(pos, packet.func_148880_c());
             }
         }
     };
@@ -266,7 +267,7 @@ public final class AutoFarmModule extends Module
     private boolean isNotAllowedToPlaceCrop(final BlockPos pos, final Block cropBlock)
     {
         final boolean invalidBase = !BASE_TO_CROP_BLOCK.getOrDefault(
-                MC.theWorld.getBlock(pos).getClass(),
+                ((IWorld)MC.theWorld).nebula$getBlock(pos).getClass(),
                 Collections.emptyList()).contains(cropBlock);
         if (invalidBase)
         {
@@ -283,7 +284,7 @@ public final class AutoFarmModule extends Module
                 continue;
             }
             final BlockPos neighbor = pos.offset(facing);
-            final Block block = MC.theWorld.getBlock(neighbor);
+            final Block block = ((IWorld)MC.theWorld).nebula$getBlock(neighbor);
             if (block == Blocks.water || block == Blocks.flowing_water)
             {
                 return false;
@@ -296,7 +297,7 @@ public final class AutoFarmModule extends Module
     {
         int height = 0;
         BlockPos pos = origin;
-        while (MC.theWorld.getBlock(pos) == Blocks.reeds)
+        while (((IWorld)MC.theWorld).nebula$getBlock(pos) == Blocks.reeds)
         {
             ++height;
             pos = pos.up();
@@ -309,7 +310,7 @@ public final class AutoFarmModule extends Module
         for (final EnumFacing facing : EnumFacing.values())
         {
             final BlockPos neighbor = pos.offset(facing);
-            final Block block = MC.theWorld.getBlock(neighbor);
+            final Block block = ((IWorld)MC.theWorld).nebula$getBlock(neighbor);
             if (block == Blocks.melon_block || block == Blocks.pumpkin)
             {
                 return neighbor;
@@ -356,7 +357,7 @@ public final class AutoFarmModule extends Module
                     final BlockPos pos = origin.add(x, y, z);
                     if (!plantTypeAtBlockMap.containsKey(pos))
                     {
-                        final Block cropBlock = MC.theWorld.getBlock(pos.up());
+                        final Block cropBlock = ((IWorld)MC.theWorld).nebula$getBlock(pos.up());
                         if (!allowCrop(cropBlock) || isNotAllowedToPlaceCrop(pos, cropBlock))
                         {
                             continue;

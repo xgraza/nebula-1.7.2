@@ -4,6 +4,7 @@ import ez.nebula.client.Nebula;
 import ez.nebula.client.api.manager.hud2.trait.HUDManifest;
 import ez.nebula.client.api.manager.hud2.type.TextHUDElement;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.util.minecraft.player.ChatUtil;
 import net.minecraft.util.EnumChatFormatting;
 
 /**
@@ -20,7 +21,7 @@ public final class TPSHUDElement extends TextHUDElement
     @Override
     public String text()
     {
-        return EnumChatFormatting.NEBULA_CLIENT_COLOR
+        return ChatUtil.NEBULA_CLIENT_COLOR
                 + "TPS: "
                 + EnumChatFormatting.GRAY
                 + String.format("%.1f", showCurrentSetting.getValue()

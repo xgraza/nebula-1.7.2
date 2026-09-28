@@ -37,7 +37,7 @@ public final class ParrotModule extends Module
         if (event.getPacket() instanceof S02PacketChat)
         {
             final S02PacketChat packet = event.getPacket();
-            final String message = StringUtils.stripControlCodes(packet.getMessage().getUnformattedText());
+            final String message = StringUtils.stripControlCodes(packet.func_148915_c().getUnformattedText());
 
             final String username = FormattingUtil.parseUsernameFromChat(message, null);
             if (username == null || username.isEmpty() || username.equalsIgnoreCase(MC.getSession().getUsername()))

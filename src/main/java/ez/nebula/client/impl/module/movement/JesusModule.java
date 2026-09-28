@@ -27,7 +27,7 @@ public final class JesusModule extends Module
     @ModuleInstance
     public static JesusModule INSTANCE;
 
-    private static final AxisAlignedBB LIQUID_FULL_AABB = new AxisAlignedBB(
+    private static final AxisAlignedBB LIQUID_FULL_AABB = AxisAlignedBB.getBoundingBox(
             0, 0, 0, 1, 0.99, 1);
 
     private int waterTicks;
@@ -77,7 +77,7 @@ public final class JesusModule extends Module
 
         if (MC.thePlayer.ticksExisted % 2 == 0
                 && waterTicks > (didExit ? 5 : 2)
-                && !MC.gameSettings.keyBindJump.pressed)
+                && !MC.gameSettings.keyBindJump.getIsKeyPressed())
         {
             event.setY(event.getY() + 0.01);
             event.setStance(event.getStance() + 0.01);

@@ -12,6 +12,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IEntityLivingBase;
 import ez.nebula.client.util.math.MathUtil;
 import ez.nebula.client.util.minecraft.world.DamageUtil;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
@@ -131,7 +132,7 @@ public final class FakePlayerModule extends Module
                 notifyInfo("Begin moving now, sneak to end the recording", 7500L);
             }
 
-            if (MC.gameSettings.keyBindSneak.pressed)
+            if (MC.gameSettings.keyBindSneak.getIsKeyPressed())
             {
                 notifyInfo("Finished recording! Recorded " + fakePlayerMovement.size() + " movements", 7500L);
                 lastRecordedMovement = null;
@@ -178,7 +179,7 @@ public final class FakePlayerModule extends Module
 
             fakePlayerEntity.setPositionAndRotation(movement.x, movement.y, movement.z, movement.yaw, movement.pitch);
             fakePlayerEntity.rotationYawHead = movement.yaw;
-            fakePlayerEntity.renderPitch = movement.pitch;
+            ((IEntityLivingBase)fakePlayerEntity).nebula$setRenderPitch(movement.pitch);
 
             fakePlayerMovement.add(movement);
         }
@@ -212,10 +213,10 @@ public final class FakePlayerModule extends Module
             double y = packet.func_149143_g();
             double z = packet.func_149145_h();
             final double distance = fakePlayerEntity.getDistance(x, y, z);
-            if (distance / packet.getSize() < 1.0f)
+            if (distance / packet.func_149146_i() < 1.0f)
             {
-                float damage = DamageUtil.getExplosionDamage(fakePlayerEntity, x, y, z, packet.getSize(), packet.getSize() * 2);
-                fakePlayerEntity.attackEntityFrom(DamageSource.setExplosionSource(new Explosion(MC.theWorld, MC.thePlayer, x, y, z, packet.getSize())), damage);
+                float damage = DamageUtil.getExplosionDamage(fakePlayerEntity, x, y, z, packet.func_149146_i(), packet.func_149146_i() * 2);
+                fakePlayerEntity.attackEntityFrom(DamageSource.setExplosionSource(new Explosion(MC.theWorld, MC.thePlayer, x, y, z, packet.func_149146_i())), damage);
             }
         }
     };
@@ -271,7 +272,7 @@ public final class FakePlayerModule extends Module
 
                     setHealth(20.0f);
                     setAbsorptionAmount(4.0f);
-                    addPotionEffect(new PotionEffect(Potion.absorption.id, 2400, 0));
+                    addPotionEffect(new PotionEffect(Potion.field_76444_x.id, 2400, 0));
                 }
             }
 

@@ -47,8 +47,13 @@ public final class NameProtectModule extends Module
 
         if (allOnlinePlayersSetting.getValue())
         {
-            for (final GuiPlayerInfo info : MC.thePlayer.sendQueue.playerInfoList)
+            for (final Object o : MC.thePlayer.sendQueue.playerInfoList)
             {
+                if (!(o instanceof GuiPlayerInfo))
+                {
+                    continue;
+                }
+                final GuiPlayerInfo info = (GuiPlayerInfo)o;
                 final String name = info.name;
                 if (!Nebula.FRIENDS.has(name))
                 {

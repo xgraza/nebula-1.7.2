@@ -34,7 +34,7 @@ public final class QuadMask
         int mask = 0;
         for (final EnumFacing facing : facings)
         {
-            mask |= values[facing.order_a];
+            mask |= values[facing.ordinal()];
         }
         return mask;
     }

@@ -152,7 +152,7 @@ public final class AutoEatModule extends Module
                 }
                 continue;
             }
-            if (stack == null || food.getHealAmount(itemStack) > ((ItemFood)stack.getItem()).getHealAmount(stack))
+            if (stack == null || food.func_150905_g(itemStack) > ((ItemFood)stack.getItem()).func_150905_g(stack))
             {
                 stack = itemStack;
                 slot = i;

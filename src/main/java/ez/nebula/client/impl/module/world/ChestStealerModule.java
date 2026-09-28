@@ -9,6 +9,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IGuiContainer;
 import ez.nebula.client.util.math.MathUtil;
 import ez.nebula.client.util.math.Timer;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
@@ -96,7 +97,7 @@ public final class ChestStealerModule extends Module
         }
 
         // use this instead of PlayerControllerMP#windowClick for compat with inf items
-        ((GuiContainer) MC.currentScreen).func_146984_a(null, slot, 0, 1);
+        ((IGuiContainer) MC.currentScreen).nebula$handleMouseClick(null, slot, 0, 1);
         return true;
     }
 

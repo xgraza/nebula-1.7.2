@@ -19,9 +19,12 @@ public final class ChatUtil
 {
     private static final Logger LOGGER = LogManager.getLogger("Nebula Chat");
     private static final Minecraft MC = Minecraft.getMinecraft();
+
+    public static final String NEBULA_CLIENT_COLOR = "\u00a7z";
+
     private static final String CHAT_PREFIX = String.format(
             "%s(Nebula):%s ",
-            EnumChatFormatting.NEBULA_CLIENT_COLOR,
+            NEBULA_CLIENT_COLOR,
             EnumChatFormatting.RESET);
 
     public static final String DEBUG_PREFIX = String.format(
@@ -45,7 +48,7 @@ public final class ChatUtil
                 LOGGER.info(component);
             } else
             {
-                MC.ingameGUI.getChatGui().printChatMessage(component);
+                MC.ingameGUI.getChatGUI().printChatMessage(component);
             }
         }
     }

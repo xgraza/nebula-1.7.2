@@ -6,6 +6,7 @@ import ez.nebula.client.api.listener.EventListener;
 import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.network.EventPacket;
 import ez.nebula.client.api.manager.IManager;
+import ez.nebula.client.mixin.duck.IPlayerControllerMP;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -30,7 +31,7 @@ public final class InventoryManager implements IManager
     {
         if (event.getPacket() instanceof S09PacketHeldItemChange)
         {
-            slot = ((S09PacketHeldItemChange) event.getPacket()).getSlotIndex();
+            slot = ((S09PacketHeldItemChange) event.getPacket()).func_149385_c();
         }
     };
 
@@ -40,7 +41,7 @@ public final class InventoryManager implements IManager
         if (event.getPacket() instanceof C09PacketHeldItemChange)
         {
             final C09PacketHeldItemChange packet = event.getPacket();
-            final int slotIndex = packet.getSlotIndex();
+            final int slotIndex = packet.func_149614_c();
             if (slotIndex > 8 || slotIndex < 0)
             {
                 if (Nebula.DEBUG)
@@ -97,7 +98,8 @@ public final class InventoryManager implements IManager
         {
             spoof(index, true);
         }
-        MC.thePlayer.inventory.currentItem = MC.playerController.currentPlayerItem = index;
+        MC.thePlayer.inventory.currentItem = index;
+        ((IPlayerControllerMP)MC.playerController).nebula$setCurrentPlayerItem(index);
     }
 
     /**

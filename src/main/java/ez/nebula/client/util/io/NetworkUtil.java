@@ -27,8 +27,13 @@ public final class NetworkUtil
             return 0;
         }
         playerName = EnumChatFormatting.getTextWithoutFormattingCodes(playerName);
-        for (final GuiPlayerInfo playerInfo : MC.thePlayer.sendQueue.playerInfoList)
+        for (final Object obj : MC.thePlayer.sendQueue.playerInfoList)
         {
+            if (!(obj instanceof GuiPlayerInfo))
+            {
+                continue;
+            }
+            final GuiPlayerInfo playerInfo = (GuiPlayerInfo) obj;
             final String name = EnumChatFormatting.getTextWithoutFormattingCodes(playerInfo.name);
             if (name.equals(playerName))
             {

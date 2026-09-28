@@ -9,6 +9,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IMinecraft;
 import ez.nebula.client.util.minecraft.network.PacketUtil;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
@@ -48,7 +49,7 @@ public final class StepModule extends Module
         {
             MC.thePlayer.stepHeight = 0.5f;
         }
-        MC.timer.timerSpeed = 1.0f;
+        ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.0f;
         timer = false;
     }
 
@@ -59,7 +60,7 @@ public final class StepModule extends Module
         if (timer && MC.thePlayer.onGround)
         {
             timer = false;
-            MC.timer.timerSpeed = 1.0f;
+            ((IMinecraft)MC).nebula$getTimer().timerSpeed = 1.0f;
         }
     };
 
@@ -97,7 +98,7 @@ public final class StepModule extends Module
         }
 
         timer = timerSetting.getValue();
-        MC.timer.timerSpeed = timer ? 1.0f / (packets + 1) : 1.0f;
+        ((IMinecraft)MC).nebula$getTimer().timerSpeed = timer ? 1.0f / (packets + 1) : 1.0f;
         for (int i = 0; i < packets; ++i)
         {
             double packetHeight = STEP_PACKET_VALUES[i];

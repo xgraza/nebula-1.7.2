@@ -1,6 +1,7 @@
 package ez.nebula.client.api.player.pathfinding.processor;
 
 import ez.nebula.client.api.player.pathfinding.node.NodeContext;
+import ez.nebula.client.mixin.duck.IWorld;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.src.BlockPos;
@@ -20,7 +21,7 @@ public final class FallDistanceProcessor implements IProcessor
         for (int y = 1; y < 256; ++y)
         {
             final BlockPos fallPos = pos.add(0, -y, 0);
-            final Block fallBlock = MC.theWorld.getBlock(fallPos);
+            final Block fallBlock = ((IWorld)MC.theWorld).nebula$getBlock(fallPos);
             if (fallBlock.getMaterial().blocksMovement() || fallBlock.getMaterial() == Material.water)
             {
                 break;

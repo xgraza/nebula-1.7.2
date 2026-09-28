@@ -2,6 +2,7 @@ package ez.nebula.client.util.render;
 
 import ez.nebula.client.impl.module.render.ClickGUIModule;
 import ez.nebula.client.impl.module.render.GlintModule;
+import ez.nebula.client.mixin.duck.IRenderItem;
 import ez.nebula.client.util.render.shader.Shader;
 import ez.nebula.client.util.render.world.QuadMask;
 import net.minecraft.client.Minecraft;
@@ -600,7 +601,7 @@ public final class RenderUtil
             {
                 glColor4f(0.5F, 0.25F, 0.8F, 1.0F);
             }
-            RENDER_ITEM.renderGlint(posX * 431278612 + -26 * 32178161, posX - 2, -26 - 2, 20, 20);
+            ((IRenderItem)RENDER_ITEM).nebula$renderGlint(posX * 431278612 + -26 * 32178161, posX - 2, -26 - 2, 20, 20);
             glDepthMask(true);
             glDisable(GL_ALPHA_TEST);
             glEnable(GL_LIGHTING);

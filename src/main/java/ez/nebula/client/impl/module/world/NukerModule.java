@@ -15,6 +15,9 @@ import ez.nebula.client.impl.module.ModuleRotationPriorities;
 import ez.nebula.client.impl.module.combat.AutoBedModule;
 import ez.nebula.client.impl.module.combat.KillAuraModule;
 import ez.nebula.client.impl.module.render.HUDModule;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IBlock;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.MathUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
 import ez.nebula.client.util.minecraft.world.BlockInfo;
@@ -75,7 +78,7 @@ public final class NukerModule extends InteractionModule
         info = null;
         breakList.clear();
         posY = -1;
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+        Nebula.INTERACTIONS.restore();
     }
 
     @Subscribe
@@ -88,13 +91,13 @@ public final class NukerModule extends InteractionModule
             {
                 continue;
             }
-            final AxisAlignedBB bb = new AxisAlignedBB(pos);
+            final AxisAlignedBB bb = IAxisAlignedBB.create(pos);
             Render3D.filledAABB(bb, QuadMask.ALL_FACES, HUDModule.INSTANCE.primaryColorSetting.getValueInt(80));
             Render3D.outlinedAABB(bb, 1.5f, QuadMask.ALL_FACES, HUDModule.INSTANCE.primaryColorSetting.getValueInt());
         }
         if (info != null)
         {
-            final AxisAlignedBB bb = new AxisAlignedBB(info.getPos());
+            final AxisAlignedBB bb = IAxisAlignedBB.create(info.getPos());
             final int faceMask = QuadMask.mask(info.getFacing());
             Render3D.filledAABB(bb, faceMask, 0x80FF0000);
             Render3D.outlinedAABB(bb, 1.5f, faceMask, 0xFFFF0000);
@@ -123,19 +126,19 @@ public final class NukerModule extends InteractionModule
                 info = null;
             }
 
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = true;
+            Nebula.INTERACTIONS.override();
             if (info != null && !breakBlock(info, true))
             {
                 return;
             }
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            Nebula.INTERACTIONS.restore();
             info = null;
         }
 
         calculateBreakPositions();
         if (breakList.isEmpty())
         {
-            PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+            Nebula.INTERACTIONS.restore();
             Nebula.INVENTORY.sync();
             info = null;
             return;
@@ -166,8 +169,9 @@ public final class NukerModule extends InteractionModule
                 continue;
             }
 
-            final Block block = MC.theWorld.getBlock(pos);
-            if (block.blockHardness == -1.0f || block.blockHardness == 100.0f || block.getMaterial() == Material.air)
+            final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
+            final float blockHardness = ((IBlock)block).nebula$getBlockHardness();
+            if (blockHardness == -1.0f || blockHardness == 100.0f || block.getMaterial() == Material.air)
             {
                 continue;
             }

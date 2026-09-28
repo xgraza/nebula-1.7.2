@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.src.GlStateManager;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL15;
 
@@ -13,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.lwjgl.opengl.GL11.GL_QUAD_STRIP;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
 /**
@@ -120,10 +119,10 @@ public final class EntityCulling
 
     public static void drawOutlinedBoundingBox(AxisAlignedBB bb)
     {
-        GlStateManager.disableAlpha();
-        GlStateManager.disableCull();
-        GlStateManager.depthMask(false);
-        GlStateManager.colorMask(false, false, false, false);
+        glDisable(GL_ALPHA_TEST);
+        glDisable(GL_CULL_FACE);
+        glDepthMask(false);
+        glColorMask(false, false, false, false);
         Tessellator var2 = Tessellator.instance;
         var2.startDrawing(GL_QUAD_STRIP);
         var2.addVertex(bb.maxX, bb.maxY, bb.maxZ);
@@ -145,9 +144,9 @@ public final class EntityCulling
         var2.addVertex(bb.minX, bb.minY, bb.minZ);
         var2.addVertex(bb.maxX, bb.minY, bb.minZ);
         var2.draw();
-        GlStateManager.depthMask(true);
-        GlStateManager.colorMask(true, true, true, true);
-        GlStateManager.enableAlpha();
+        glDepthMask(true);
+        glColorMask(true, true, true, true);
+        glEnable(GL_ALPHA_TEST);
     }
 
     private static final class Result

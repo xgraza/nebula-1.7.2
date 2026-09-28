@@ -127,7 +127,7 @@ public final class InventoryUtil
             {
                 continue;
             }
-            final Block itemBlock = ((ItemBlock) stack.getItem()).getBlock();
+            final Block itemBlock = ((ItemBlock) stack.getItem()).field_150939_a;
             for (final Block block : blocks)
             {
                 if (block == itemBlock)

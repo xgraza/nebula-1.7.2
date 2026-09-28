@@ -9,6 +9,8 @@ import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.manager.module.type.InteractionModule;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IEnumFacing;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.MathUtil;
 import ez.nebula.client.util.math.Timer;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
@@ -176,7 +178,7 @@ public final class AutoTreeModule extends InteractionModule
         Nebula.INVENTORY.spoof(slot);
         for (int i = 0; i < packetsSetting.getValue(); ++i)
         {
-            place(saplingPos, PlayerUtil.getFacing().getOpposite());
+            place(saplingPos, ((IEnumFacing)(Object)PlayerUtil.getFacing()).nebula$getOpposite());
         }
         Nebula.INVENTORY.sync();
     }
@@ -209,7 +211,7 @@ public final class AutoTreeModule extends InteractionModule
 
     private boolean isPosTree(final BlockPos pos, final boolean includeWood)
     {
-        final Block block = MC.theWorld.getBlock(pos);
+        final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
         return block instanceof BlockSapling || (includeWood && (block instanceof BlockWood || block instanceof BlockLeaves));
     }
 
@@ -229,7 +231,7 @@ public final class AutoTreeModule extends InteractionModule
             {
                 continue;
             }
-            final Block placeOnBlock = MC.theWorld.getBlock(pos.down());
+            final Block placeOnBlock = ((IWorld)MC.theWorld).nebula$getBlock(pos.down());
             if (placeOnBlock == Blocks.grass)
             {
                 // make sure we don't place too close!
@@ -252,7 +254,7 @@ public final class AutoTreeModule extends InteractionModule
             {
                 return false;
             }
-            final Block block = ((ItemBlock) stack.getItem()).getBlock();
+            final Block block = ((ItemBlock) stack.getItem()).field_150939_a;
             if (!(block instanceof BlockSapling))
             {
                 return false;

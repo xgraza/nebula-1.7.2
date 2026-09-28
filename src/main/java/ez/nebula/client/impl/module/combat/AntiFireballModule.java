@@ -135,11 +135,11 @@ public final class AntiFireballModule extends InteractionModule
         if (event.getPacket() instanceof S0EPacketSpawnObject)
         {
             final S0EPacketSpawnObject packet = event.getPacket();
-            if (packet.getType() != FIREBALL_TYPE)
+            if (packet.func_148993_l() != FIREBALL_TYPE)
             {
                 return;
             }
-            trackedFireballList.add(packet.getID());
+            trackedFireballList.add(packet.func_149001_c());
         }
     };
 }

@@ -1,5 +1,6 @@
 package ez.nebula.client.impl.module.player;
 
+import ez.nebula.client.api.listener.Event;
 import ez.nebula.client.api.listener.EventListener;
 import ez.nebula.client.api.listener.Subscribe;
 import ez.nebula.client.api.listener.event.game.EventUpdate;
@@ -8,7 +9,9 @@ import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.manager.module.type.InteractionModule;
 import ez.nebula.client.api.manager.module.type.RotationPriority;
+import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.ModuleRotationPriorities;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.minecraft.player.InventoryUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
 import ez.nebula.client.util.minecraft.world.BlockUtil;
@@ -17,7 +20,6 @@ import net.minecraft.block.BlockSign;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.item.ItemEnderPearl;
 import net.minecraft.src.BlockPos;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 
@@ -33,10 +35,14 @@ public final class PearlPhaseModule extends InteractionModule
 {
     private static final float PITCH = 79.452f;
 
+    private final Setting<Boolean> extraCheckSetting = builder("No Fall", true)
+            .setDescription("If to check under the block you're phasing into the ensure there is a block to stand on")
+            .build();
+
     @Subscribe
     private final EventListener<EventUpdate> updateEventListener = event ->
     {
-        if (!MC.thePlayer.isCollidedHorizontally || MC.thePlayer.phased)
+        if (!MC.thePlayer.isCollidedHorizontally || PlayerUtil.isPhased())
         {
             return;
         }
@@ -56,21 +62,18 @@ public final class PearlPhaseModule extends InteractionModule
     };
 
     @Subscribe
-    private final EventListener<EventPushFromBlocks> pushFromBlocksEventListener = event ->
-            event.setCanceled(true);
+    private final EventListener<EventPushFromBlocks> pushFromBlocksEventListener = Event::cancel;
 
     private float[] calcBlockTargetAngles()
     {
         final float[] angles = { 0.0f, PITCH };
-        final AxisAlignedBB bb = MC.thePlayer.boundingBox.copy().offset(MC.thePlayer.motionX, -0.0625, MC.thePlayer.motionZ);
 
-        BlockPos pos = PlayerUtil.getOrigin();
-        final Block block = MC.theWorld.getBlock(pos);
+        final BlockPos pos = PlayerUtil.getOrigin();
+        final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
         if (block instanceof BlockSign)
         {
             angles[1] = 84.922f;
         }
-        pos = pos.up();
 
         for (final EnumFacing facing : BlockUtil.HORIZONTALS)
         {
@@ -80,21 +83,23 @@ public final class PearlPhaseModule extends InteractionModule
                 continue;
             }
 
-            if (!MC.theWorld.getCollidingBoundingBoxes(MC.thePlayer, bb).isEmpty())
+            if (extraCheckSetting.getValue() && BlockUtil.isReplaceable(neighbor.down()))
             {
-                angles[0] = MathHelper.wrapAngleTo180_float(BlockUtil.getHorizontalFacing(facing) * -90.0f);
-                if (block instanceof BlockTorch)
-                {
-                    if (angles[0] > 0.0f)
-                    {
-                        angles[0] -= 29;
-                    } else
-                    {
-                        angles[0] += 29;
-                    }
-                }
-                return angles;
+                continue;
             }
+
+            angles[0] = MathHelper.wrapAngleTo180_float(BlockUtil.getHorizontalFacing(facing) * -90.0f);
+            if (block instanceof BlockTorch)
+            {
+                if (angles[0] > 0.0f)
+                {
+                    angles[0] -= 29;
+                } else
+                {
+                    angles[0] += 29;
+                }
+            }
+            return angles;
         }
         return null;
     }

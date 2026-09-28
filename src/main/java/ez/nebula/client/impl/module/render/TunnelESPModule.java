@@ -11,6 +11,8 @@ import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.world.BlockSearcher;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.minecraft.world.BlockUtil;
 import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
@@ -95,8 +97,7 @@ public final class TunnelESPModule extends Module
         MC.mcProfiler.startSection("tunnelESP");
         for (final BlockPos pos : tunnelList)
         {
-            final AxisAlignedBB bb = new AxisAlignedBB(pos);
-            Render3D.filledAABB(bb, QuadMask.ALL_FACES, HUDModule.INSTANCE.primaryColorSetting.getValueInt(60));
+            Render3D.filledAABB(IAxisAlignedBB.create(pos), QuadMask.ALL_FACES, HUDModule.INSTANCE.primaryColorSetting.getValueInt(60));
         }
         MC.mcProfiler.endSection();
     };
@@ -219,7 +220,7 @@ public final class TunnelESPModule extends Module
 
     private boolean isValidWalkthrough(final BlockPos pos)
     {
-        final Block block = MC.theWorld.getBlock(pos);
+        final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
         return !block.getMaterial().isSolid() && !(block instanceof BlockSlab) && !(block instanceof BlockStairs);
     }
 }

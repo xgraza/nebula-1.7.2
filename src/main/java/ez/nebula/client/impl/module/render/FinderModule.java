@@ -14,6 +14,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleInstance;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.world.BlockSearcher;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
 import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
 import io.netty.util.internal.ConcurrentSet;
@@ -90,7 +91,7 @@ public final class FinderModule extends Module
         MC.mcProfiler.startSection("finder");
         for (final BlockPos pos : posSet)
         {
-            final AxisAlignedBB bb = new AxisAlignedBB(pos);
+            final AxisAlignedBB bb = IAxisAlignedBB.create(pos);
             Render3D.filledAABB(bb, QuadMask.ALL_FACES, HUDModule.INSTANCE.primaryColorSetting.getValueInt(80));
             Render3D.outlinedAABB(bb, 1.5f, QuadMask.ALL_FACES, HUDModule.INSTANCE.primaryColorSetting.getValueInt());
         }
@@ -103,10 +104,10 @@ public final class FinderModule extends Module
         if (event.getPacket() instanceof S23PacketBlockChange)
         {
             final S23PacketBlockChange packet = event.getPacket();
-            final BlockPos pos = new BlockPos(packet.getX(), packet.getY(), packet.getZ());
+            final BlockPos pos = new BlockPos(packet.func_148879_d(), packet.func_148878_e(), packet.func_148877_f());
             if (posSet.contains(pos))
             {
-                final Block block = packet.getType();
+                final Block block = packet.func_148880_c();
                 if (BLOCK_LIST.contains(block))
                 {
                     posSet.add(pos);

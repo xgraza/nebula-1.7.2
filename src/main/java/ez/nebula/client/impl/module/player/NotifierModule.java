@@ -90,14 +90,14 @@ public final class NotifierModule extends Module
         if (event.getPacket() instanceof S0EPacketSpawnObject && pearlsSetting.getValue())
         {
             final S0EPacketSpawnObject packet = event.getPacket();
-            if (packet.getType() != ENDER_PEARL_SPAWN_TYPE)
+            if (packet.func_148993_l() != ENDER_PEARL_SPAWN_TYPE)
             {
                 return;
             }
 
-            double x = packet.getX() / 32.0;
-            double y = packet.getY() / 32.0;
-            double z = packet.getZ() / 32.0;
+            double x = packet.func_148997_d() / 32.0;
+            double y = packet.func_148998_e() / 32.0;
+            double z = packet.func_148994_f() / 32.0;
 
             // find closest entity to pearl
             final EntityPlayer thrownByPlayer = MC.theWorld.getClosestPlayer(x, y, z, -1);
@@ -124,7 +124,7 @@ public final class NotifierModule extends Module
         if (event.getPacket() instanceof S02PacketChat && messageSetting.getValue())
         {
             final S02PacketChat packet = event.getPacket();
-            final String raw = packet.getMessage().getUnformattedText();
+            final String raw = packet.func_148915_c().getUnformattedText();
             if (!raw.startsWith("<") && raw.contains(" whispers: ") && !Display.isActive())
             {
                 final String[] parts = raw.trim().split(" ");

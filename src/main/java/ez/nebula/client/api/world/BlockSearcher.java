@@ -100,7 +100,7 @@ public final class BlockSearcher extends Thread
                     }
                     final int posX = ((chunkX * 16) + x);
                     final int posZ = ((chunkZ * 16) + z);
-                    final Block block = blockStorage.func_150819_a(posX & 15, y & 15, posZ & 15);
+                    final Block block = blockStorage.getBlockByExtId(posX & 15, y & 15, posZ & 15);
                     callback.accept(new SearchedBlock(posX, y, posZ, block));
                 }
             }

@@ -28,7 +28,7 @@ public final class AutoWalkModule extends Module
     public void onDisable()
     {
         super.onDisable();
-        if (MC.thePlayer != null && !MC.gameSettings.keyBindForward.pressed)
+        if (MC.thePlayer != null && !MC.gameSettings.keyBindForward.getIsKeyPressed())
         {
             MC.thePlayer.movementInput.moveForward = 0.0f;
         }
@@ -45,7 +45,7 @@ public final class AutoWalkModule extends Module
 
     private boolean allowWalk()
     {
-        return (!stopOnSneakSetting.getValue() || !MC.gameSettings.keyBindSneak.pressed) &&
-                (!stopOnBackSetting.getValue() || !MC.gameSettings.keyBindBack.pressed);
+        return (!stopOnSneakSetting.getValue() || !MC.gameSettings.keyBindSneak.getIsKeyPressed()) &&
+                (!stopOnBackSetting.getValue() || !MC.gameSettings.keyBindBack.getIsKeyPressed());
     }
 }

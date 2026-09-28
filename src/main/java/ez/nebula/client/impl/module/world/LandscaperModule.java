@@ -12,6 +12,8 @@ import ez.nebula.client.api.manager.module.type.RotationPriority;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.api.setting.Setting;
 import ez.nebula.client.impl.module.ModuleRotationPriorities;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
+import ez.nebula.client.mixin.duck.IWorld;
 import ez.nebula.client.util.math.AngleUtil;
 import ez.nebula.client.util.math.MathUtil;
 import ez.nebula.client.util.minecraft.player.PlayerUtil;
@@ -19,9 +21,7 @@ import ez.nebula.client.util.minecraft.world.BlockUtil;
 import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
 import net.minecraft.block.*;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.src.BlockPos;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public final class LandscaperModule extends InteractionModule
         {
             Nebula.INVENTORY.sync();
         }
-        PlayerControllerMP.ALLOW_BREAK_OVERRIDE = false;
+        Nebula.INTERACTIONS.restore();
         angles = null;
     }
 
@@ -91,7 +91,7 @@ public final class LandscaperModule extends InteractionModule
         {
             angles = AngleUtil.anglesToBlock(breakingBlockPos, EnumFacing.UP, event.getPartialTicks());
         }
-        Render3D.filledAABB(new AxisAlignedBB(breakingBlockPos), QuadMask.ALL_FACES, 0x8000FF00);
+        Render3D.filledAABB(IAxisAlignedBB.create(breakingBlockPos), QuadMask.ALL_FACES, 0x8000FF00);
         MC.mcProfiler.endSection();
     };
 
@@ -128,7 +128,7 @@ public final class LandscaperModule extends InteractionModule
 
     private boolean isBlockValid(final BlockPos blockPos)
     {
-        final Block block = MC.theWorld.getBlock(blockPos);
+        final Block block = ((IWorld)MC.theWorld).nebula$getBlock(blockPos);
         if (!snowSetting.getValue() && (block instanceof BlockSnow || block instanceof BlockSnowBlock))
         {
             return false;

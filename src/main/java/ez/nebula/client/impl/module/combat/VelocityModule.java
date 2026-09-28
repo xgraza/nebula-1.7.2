@@ -39,7 +39,7 @@ public final class VelocityModule extends Module
         if (event.getPacket() instanceof S12PacketEntityVelocity)
         {
             final S12PacketEntityVelocity packet = event.getPacket();
-            if (!knockbackSetting.getValue() || packet.getEntityId() != MC.thePlayer.getEntityId())
+            if (!knockbackSetting.getValue() || packet.func_149412_c() != MC.thePlayer.getEntityId())
             {
                 return;
             }

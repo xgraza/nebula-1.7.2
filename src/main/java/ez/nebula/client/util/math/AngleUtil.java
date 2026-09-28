@@ -1,5 +1,6 @@
 package ez.nebula.client.util.math;
 
+import ez.nebula.client.mixin.duck.IEnumFacing;
 import ez.nebula.client.util.minecraft.world.BlockUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,7 @@ public final class AngleUtil
         Vec3 var4 = MC.thePlayer.getPosition(1.0f);
         Vec3 var5 = getLookVec(yaw, pitch);
         Vec3 var6 = var4.addVector(var5.xCoord * reach, var5.yCoord * reach, var5.zCoord * reach);
-        return MC.theWorld.rayTraceBlocks(var4, var6, false, false, true);
+        return MC.theWorld.func_147447_a(var4, var6, false, false, true);
     }
 
     public static Vec3 getLookVec(final float yaw, final float pitch)
@@ -64,7 +65,7 @@ public final class AngleUtil
                     continue;
                 }
 
-                float[] angles = anglesToBlock(neighbor, facing.getOpposite(), 1.0f);
+                float[] angles = anglesToBlock(neighbor, ((IEnumFacing)(Object)facing).nebula$getOpposite(), 1.0f);
                 Vec3 var5 = getLookVec(angles[0], angles[1]);
                 Vec3 var6 = var4.addVector(var5.xCoord * reach, var5.yCoord * reach, var5.zCoord * reach);
                 final double distance = var6.distanceTo(Vec3.createVectorHelper(neighbor.getX() + 0.5, neighbor.getY() + 0.5, neighbor.getZ() + 0.5));
@@ -97,9 +98,9 @@ public final class AngleUtil
     {
         final Vec3 eyes = MC.thePlayer.getPosition(partialTicks);
 
-        int offsetX = face.getFaceX();
-        int offsetY = face.getFaceY();
-        int offsetZ = face.getFaceZ();
+        int offsetX = face.getFrontOffsetX();
+        int offsetY = face.getFrontOffsetY();
+        int offsetZ = face.getFrontOffsetZ();
 
         double deltaX = (Math.floor(eyes.xCoord) + 0.5)
                 - ((double) pos.getX() + 0.5 - (offsetX * 0.5));

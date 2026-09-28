@@ -11,6 +11,7 @@ import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.NumberSetting;
 import ez.nebula.client.impl.module.render.HUDModule;
+import ez.nebula.client.mixin.duck.IAxisAlignedBB;
 import ez.nebula.client.util.math.Timer;
 import ez.nebula.client.util.render.world.QuadMask;
 import ez.nebula.client.util.render.world.Render3D;
@@ -64,10 +65,11 @@ public final class AirPlaceModule extends Module
         }
         MC.mcProfiler.startSection("airPlace");
         final BlockPos pos = new BlockPos(result.blockX, result.blockY, result.blockZ);
-        final EnumFacing facing = EnumFacing.faceList[result.sideHit];
+        final EnumFacing facing = EnumFacing.values()[result.sideHit];
         final int color = HUDModule.INSTANCE.primaryColorSetting.getValueInt(120);
-        Render3D.outlinedAABB(new AxisAlignedBB(pos), 1.5f, QuadMask.mask(facing), color);
-        Render3D.filledAABB(new AxisAlignedBB(pos), QuadMask.mask(facing), color);
+        final AxisAlignedBB bb = IAxisAlignedBB.create(pos);
+        Render3D.outlinedAABB(bb, 1.5f, QuadMask.mask(facing), color);
+        Render3D.filledAABB(bb, QuadMask.mask(facing), color);
         MC.mcProfiler.endSection();
     };
 
@@ -86,13 +88,13 @@ public final class AirPlaceModule extends Module
         final Vec3 end = start.addVector(var5.xCoord * rangeSetting.getValue(),
                 var5.yCoord * rangeSetting.getValue(),
                 var5.zCoord * rangeSetting.getValue());
-        result = MC.theWorld.rayTraceBlocks(start, end, true, false, true);
+        result = MC.theWorld.func_147447_a(start, end, true, false, true);
         if (result == null)
         {
             return;
         }
 
-        if (MC.gameSettings.keyBindUseItem.pressed
+        if (MC.gameSettings.keyBindUseItem.getIsKeyPressed()
                 && result.sideHit != -1
                 && timer.hasElapsed((long) (delaySetting.getValue() * 1000.0), true))
         {

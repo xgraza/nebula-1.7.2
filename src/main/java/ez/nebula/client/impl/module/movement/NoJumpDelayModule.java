@@ -7,6 +7,8 @@ import ez.nebula.client.api.manager.module.Module;
 import ez.nebula.client.api.manager.module.trait.ModuleCategory;
 import ez.nebula.client.api.manager.module.trait.ModuleManifest;
 import ez.nebula.client.api.setting.Setting;
+import ez.nebula.client.mixin.duck.IEntityLivingBase;
+import ez.nebula.client.mixin.duck.IEntityPlayerSP;
 
 /**
  * @author xgraza
@@ -24,11 +26,11 @@ public final class NoJumpDelayModule extends Module
     @Subscribe
     private final EventListener<EventUpdate> updateEventListener = event ->
     {
-        MC.thePlayer.jumpTicks = 0;
+        ((IEntityLivingBase)MC.thePlayer).nebula$setJumpTicks(0);
 
         if (horsesSetting.getValue() && MC.thePlayer.isRidingHorse())
         {
-            MC.thePlayer.horseJumpPowerCounter = 9;
+            ((IEntityPlayerSP)MC.thePlayer).nebula$setHorseJumpPowerCounter(9);
         }
     };
 }

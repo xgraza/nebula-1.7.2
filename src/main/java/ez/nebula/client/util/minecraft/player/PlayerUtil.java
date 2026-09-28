@@ -83,7 +83,7 @@ public final class PlayerUtil
     public static boolean isPlayerCollided(final int x, final int y, final int z)
     {
         final AxisAlignedBB aabb = MC.thePlayer.boundingBox.copy().expand(0.0625, 0, 0.0625);
-        final AxisAlignedBB aabb2 = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+        final AxisAlignedBB aabb2 = AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1);
         return aabb.intersectsWith(aabb2);
     }
 }

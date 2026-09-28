@@ -3,6 +3,8 @@ package ez.nebula.client.api.player.pathfinding.processor;
 import ez.nebula.client.api.player.pathfinding.node.Node;
 import ez.nebula.client.api.player.pathfinding.node.NodeContext;
 import ez.nebula.client.api.player.pathfinding.tasks.MineTask;
+import ez.nebula.client.mixin.duck.IBlock;
+import ez.nebula.client.mixin.duck.IWorld;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.src.BlockPos;
@@ -20,10 +22,11 @@ public final class BlockedPathProcessor implements IProcessor
         final BlockPos pos = ctx.getPos(), prevPos = ctx.getPrevPos();
         final Node node = ctx.getNode();
 
-        final Block block = MC.theWorld.getBlock(pos);
+        final Block block = ((IWorld)MC.theWorld).nebula$getBlock(pos);
         if (isBlockImpassible(block, pos))
         {
-            if (block.blockHardness == -1 || block.blockHardness == 100.0f)
+            final float hardness = ((IBlock) block).nebula$getBlockHardness();
+            if (hardness == -1 || hardness == 100.0f)
             {
                 return IMPOSSIBLE;
             }
@@ -33,8 +36,8 @@ public final class BlockedPathProcessor implements IProcessor
             node.taskList.add(task);
         }
 
-        final Block blockAbove = MC.theWorld.getBlock(pos.up());
-        final Block blockUnder = MC.theWorld.getBlock(pos.down());
+        final Block blockAbove = ((IWorld)MC.theWorld).nebula$getBlock(pos.up());
+        final Block blockUnder = ((IWorld)MC.theWorld).nebula$getBlock(pos.down());
         
         final int deltaX = pos.getX() - prevPos.getX();
         final int deltaY = pos.getY() - prevPos.getY();
@@ -64,7 +67,7 @@ public final class BlockedPathProcessor implements IProcessor
             {
                 // can we even fall down?
                 final BlockPos headPos = pos.up().up();
-                if (isBlockImpassible(MC.theWorld.getBlock(headPos), headPos))
+                if (isBlockImpassible(((IWorld)MC.theWorld).nebula$getBlock(headPos), headPos))
                 {
                     return IMPOSSIBLE;
                 }
@@ -103,8 +106,8 @@ public final class BlockedPathProcessor implements IProcessor
 
     private boolean isBlockImpassible(final Block block, final BlockPos pos)
     {
-        final Block blockAbove = MC.theWorld.getBlock(pos.up());
-        final Block blockUnder = MC.theWorld.getBlock(pos.down());
+        final Block blockAbove = ((IWorld)MC.theWorld).nebula$getBlock(pos.up());
+        final Block blockUnder = ((IWorld)MC.theWorld).nebula$getBlock(pos.down());
 
         // cannot pass through solid blocks
         if (block.getMaterial().blocksMovement() || blockAbove.getMaterial().blocksMovement())
@@ -133,7 +136,7 @@ public final class BlockedPathProcessor implements IProcessor
         {
             // check the block under the block at our feet -
             // we're checking to see if there are blocks under that could possibly create an update and let us fall
-            final Block blockUnder2 = MC.theWorld.getBlock(pos.down().down());
+            final Block blockUnder2 = ((IWorld)MC.theWorld).nebula$getBlock(pos.down().down());
             return blockUnder2 == Blocks.standing_sign
                     || blockUnder2 == Blocks.wall_sign
                     || blockUnder2 == Blocks.tripwire
@@ -154,8 +157,8 @@ public final class BlockedPathProcessor implements IProcessor
             node.diagnoalList.add(adj2);
         }
 
-        final Block block1 = MC.theWorld.getBlock(adj1);
-        final Block block2 = MC.theWorld.getBlock(adj2);
+        final Block block1 = ((IWorld)MC.theWorld).nebula$getBlock(adj1);
+        final Block block2 = ((IWorld)MC.theWorld).nebula$getBlock(adj2);
 
         final boolean adjB1 = block1.getMaterial().blocksMovement();
         final boolean adjB2 = block2.getMaterial().blocksMovement();
@@ -165,8 +168,8 @@ public final class BlockedPathProcessor implements IProcessor
             return IMPOSSIBLE;
         }
 
-        g = getGCostForBlock(block1, MC.theWorld.getBlock(adj1.down()), MC.theWorld.getBlock(adj1.up()), adj1, g);
-        g = getGCostForBlock(block2, MC.theWorld.getBlock(adj2.down()), MC.theWorld.getBlock(adj2.up()), adj2, g);
+        g = getGCostForBlock(block1, ((IWorld)MC.theWorld).nebula$getBlock(adj1.down()), ((IWorld)MC.theWorld).nebula$getBlock(adj1.up()), adj1, g);
+        g = getGCostForBlock(block2, ((IWorld)MC.theWorld).nebula$getBlock(adj2.down()), ((IWorld)MC.theWorld).nebula$getBlock(adj2.up()), adj2, g);
 
         return g;
     }

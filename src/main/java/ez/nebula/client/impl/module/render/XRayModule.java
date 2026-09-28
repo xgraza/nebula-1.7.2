@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @author xgraza
- * @see net.minecraft.block.Block
+ * @see Block
  * @see net.minecraft.client.renderer.WorldRenderer
  * @since 03/07/25
  */
