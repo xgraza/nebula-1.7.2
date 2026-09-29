@@ -147,6 +147,7 @@ public final class ScaffoldModule extends InteractionModule
                 {
                     MC.thePlayer.motionY = MoveUtil.getJumpHeight(0.42f);
                 }
+                MC.thePlayer.jump();
             } else
             {
                 if (MC.thePlayer.onGround || MC.thePlayer.motionY == 0.16477328182606651)

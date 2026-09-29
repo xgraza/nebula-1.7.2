@@ -9,7 +9,7 @@ import java.awt.Color;
 public final class AlphaSliderColorComponent extends NumberSettingComponent
 {
     private static final ResourceLocation RGB_GRADIENT_LOCATION = new ResourceLocation(
-            "assets/nebula",
+            "nebula",
             "texture/clickgui/transparency.png");
     private static final double SLIDER_HEIGHT = 5.0;
 

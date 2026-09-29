@@ -172,6 +172,11 @@ public final class InventoryUtil
         return count <= stack.stackSize;
     }
 
+    public static boolean isValidHotbarSlot(final int slot)
+    {
+        return slot > 8 || slot < 0;
+    }
+
     public enum ClickType
     {
         /**

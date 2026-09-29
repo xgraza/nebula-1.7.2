@@ -4,6 +4,7 @@ import ez.nebula.client.api.listener.EventBus;
 import ez.nebula.client.api.listener.event.game.EventPostUpdate;
 import ez.nebula.client.api.listener.event.game.EventUpdate;
 import ez.nebula.client.api.listener.event.player.EventFastUpdate;
+import ez.nebula.client.api.listener.event.player.EventMove;
 import ez.nebula.client.api.listener.event.player.EventMoveUpdate;
 import ez.nebula.client.mixin.duck.IEntityClientPlayerMP;
 import ez.nebula.client.mixin.duck.IEntityPlayer;
@@ -42,6 +43,17 @@ public abstract class EntityClientPlayerMPMixin extends EntityPlayerSP implement
     public EntityClientPlayerMPMixin(Minecraft par1Minecraft, World par2World, Session par3Session, int par4)
     {
         super(par1Minecraft, par2World, par3Session, par4);
+    }
+
+    @Override
+    public void moveEntity(double par1, double p_70091_3_, double par3)
+    {
+        final EventMove event = new EventMove(par1, p_70091_3_, par3);
+        if (EventBus.dispatch(event))
+        {
+            return;
+        }
+        super.moveEntity(event.getX(), event.getY(), event.getZ());
     }
 
     @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;onUpdate()V", shift = At.Shift.BEFORE))

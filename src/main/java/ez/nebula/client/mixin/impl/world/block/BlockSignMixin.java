@@ -1,4 +1,4 @@
-package ez.nebula.client.mixin.impl.block;
+package ez.nebula.client.mixin.impl.world.block;
 
 import ez.nebula.client.mixin.duck.IBlockSign;
 import net.minecraft.block.BlockSign;

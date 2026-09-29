@@ -87,6 +87,10 @@ minecraft {
 def refMap = "${tasks.compileJava.temporaryDir}" + File.separator + "mixins.nebula.refmap.json"
 def mixinSrg = "${tasks.reobf.temporaryDir}" + File.separator + "mixins.srg"
 afterEvaluate {
+    tasks.matching { it.name == "sourceMainJava" }.configureEach {
+        dependsOn(generateBuildConfig)
+    }
+
     tasks.withType(JavaCompile).configureEach {
         options.compilerArgs += ["-AreobfSrgFile=${tasks.reobf.srg}",
                                  "-AoutSrgFile=${mixinSrg}",

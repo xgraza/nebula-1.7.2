@@ -7,7 +7,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.Color;
 
@@ -22,17 +24,25 @@ public class FontRendererMixin
 
     @Shadow private float alpha;
 
-    @Redirect(method = "renderStringAtPos", at = @At(value = "INVOKE", target = "Ljava/lang/String;indexOf(I)I"))
-    private int a(String str, int i)
+    @Unique private boolean useShadow;
+
+    @Inject(method = "renderStringAtPos", at = @At("HEAD"))
+    private void hooK$renderStringAtPos(String p_78255_1_, boolean p_78255_2_, CallbackInfo ci)
+    {
+        useShadow = p_78255_2_;
+    }
+
+    @Redirect(method = "renderStringAtPos", at = @At(value = "INVOKE", target = "Ljava/lang/String;indexOf(I)I", ordinal = 0))
+    private int redirect$renderStringAtPos$customNebulaTextColor(String str, int i)
     {
         final int index = COLOR_CODE_INDEX_MAP.indexOf(i);
         if (index == 22)
         {
             Color color = new Color(HUDModule.INSTANCE.getBaseColor(10));
-//            if (par2)
-//            {
-//                color = color.darker().darker().darker();
-//            }
+            if (useShadow)
+            {
+                color = color.darker().darker().darker();
+            }
             final int var6 = color.getRGB();
             final float red = (float) (var6 >> 16 & 255) / 255.0F;
             final float blue = (float) (var6 & 255) / 255.0F;

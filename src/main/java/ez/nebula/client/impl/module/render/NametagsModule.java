@@ -53,7 +53,7 @@ public final class NametagsModule extends Module
     private static final ItemStack FAKE_G_HORSE_ARMOR_STACK = new ItemStack(Items.golden_horse_armor, 1);
     private static final ItemStack FAKE_D_HORSE_ARMOR_STACK = new ItemStack(Items.diamond_horse_armor, 1);
     private static final ResourceLocation NEBULA_ICON_LOCATION = new ResourceLocation(
-            "assets/nebula", "texture/icon/128x.png");
+            "nebula", "texture/icon/128x.png");
     private static final int ITEM_RENDER_SIZE = 16;
 
     private final Setting<Boolean> backgroundSetting = builder("Background", false)

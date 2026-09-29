@@ -45,7 +45,7 @@ public final class Nebula
 {
     private static final Logger LOGGER = LogManager.getLogger(BuildConfig.NAME);
     private static final ResourceLocation NEBULA_SPLASH_TEXT_RESOURCE = new ResourceLocation(
-            "assets/nebula", "splashs.txt");
+            "nebula", "splashs.txt");
 
     /**
      * The current Nebula version based on SemVer specifications
