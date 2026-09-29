@@ -23,7 +23,7 @@ public class GuiInGameForgeMixin
         Render2D.RESOLUTION = res;
     }
 
-    @Inject(method = "renderGameOverlay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glColor4f(FFFF)V", shift = At.Shift.AFTER))
+    @Inject(method = "renderGameOverlay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glColor4f(FFFF)V", shift = At.Shift.AFTER, ordinal = 1))
     private void hook$renderGameOverlay$render2DEvent(float partialTicks, boolean hasScreen, int mouseX, int mouseY, CallbackInfo ci)
     {
         final Minecraft mc = Minecraft.getMinecraft();
