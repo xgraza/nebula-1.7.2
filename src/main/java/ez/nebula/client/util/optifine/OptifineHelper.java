@@ -22,6 +22,11 @@ public class OptifineHelper
         }
     }
 
+    public static boolean exists()
+    {
+        return OPTIFINE_CLASS != null;
+    }
+
     static
     {
         try

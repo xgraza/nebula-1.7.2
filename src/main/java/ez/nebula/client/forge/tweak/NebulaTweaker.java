@@ -5,6 +5,8 @@ import com.google.common.primitives.Ints;
 import cpw.mods.fml.common.launcher.FMLInjectionAndSortingTweaker;
 import cpw.mods.fml.relauncher.CoreModManager;
 import cpw.mods.fml.relauncher.ReflectionHelper;
+import ez.nebula.client.util.fml.FMLHelper;
+import ez.nebula.client.util.optifine.OptifineHelper;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -64,8 +66,19 @@ public final class NebulaTweaker implements ITweaker
     {
         LOGGER.info("Mixin init");
         MixinBootstrap.init();
-        MixinEnvironment.getCurrentEnvironment().setOption(MixinEnvironment.Option.DEBUG_ALL, true);
-        Mixins.addConfiguration("mixins.nebula.json");
+        if (FMLHelper.isDeobfEnv())
+        {
+            LOGGER.info("In a deobfuscated environment, enabling debug mixin options");
+            MixinEnvironment.getCurrentEnvironment().setOption(MixinEnvironment.Option.DEBUG_ALL, true);
+            MixinEnvironment.getCurrentEnvironment().setOption(MixinEnvironment.Option.DEBUG_EXPORT, true);
+            MixinEnvironment.getCurrentEnvironment().setOption(MixinEnvironment.Option.HOT_SWAP, true);
+        }
+        Mixins.addConfiguration("mixins.nebula.common.json");
+        if (OptifineHelper.exists())
+        {
+            LOGGER.info("Optifine detected, adding \"mixins.nebula.optifine.json\" mixin config");
+            Mixins.addConfiguration("mixins.nebula.optifine.json");
+        }
     }
 
     @Override
