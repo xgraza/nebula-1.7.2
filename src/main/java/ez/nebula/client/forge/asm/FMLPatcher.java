@@ -1,4 +1,4 @@
-package ez.nebula.client.forge.patch;
+package ez.nebula.client.forge.asm;
 
 import com.google.common.collect.Lists;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -7,11 +7,17 @@ import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.*;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * @author xgraza
+ * @since 10/02/26
+ * Patches the FML to use ASM5 instead of ASM4 - will require a dep override in whatever launcher you use
+ */
 @SuppressWarnings("unused")
-public final class ASMParserPatcher implements IClassTransformer
+public final class FMLPatcher implements IClassTransformer
 {
-    private static final Logger LOGGER = LogManager.getLogger("Nebula ASM Patcher");
+    private static final Logger LOGGER = LogManager.getLogger("FML ASM Patcher");
     private static final List<String> PATCH_CLASSES = Lists.newArrayList(
             "cpw.mods.fml.common.discovery.asm.ModClassVisitor",
             "cpw.mods.fml.common.discovery.asm.ModMethodVisitor",
@@ -23,11 +29,12 @@ public final class ASMParserPatcher implements IClassTransformer
     {
         if (PATCH_CLASSES.contains(transformedName))
         {
-            LOGGER.info("Attempting to patch {}", transformedName);
-
+            LOGGER.info("Found FML patch class {}", transformedName);
             final ClassReader cr = new ClassReader(basicClass);
             final ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-            cr.accept(new ClassVisitor(Opcodes.ASM5, cw)
+
+            AtomicBoolean patched = new AtomicBoolean(false);
+            cr.accept(new ClassVisitor(Opcodes.ASM4, cw)
             {
                 @Override
                 public MethodVisitor visitMethod(int access, String mName, String desc, String signature, String[] exceptions) {
@@ -37,7 +44,7 @@ public final class ASMParserPatcher implements IClassTransformer
                         return mv;
                     }
 
-                    return new MethodVisitor(Opcodes.ASM5, mv)
+                    return new MethodVisitor(Opcodes.ASM4, mv)
                     {
                         @Override
                         public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf)
@@ -61,8 +68,8 @@ public final class ASMParserPatcher implements IClassTransformer
                         public void visitLdcInsn(Object cst) {
                             if (cst instanceof Integer && ((Integer) cst) == Opcodes.ASM4)
                             {
-                                LOGGER.info("Patched ASM4 to ASM5!");
                                 super.visitLdcInsn(Opcodes.ASM5);
+                                patched.set(true);
                                 return;
                             }
                             super.visitLdcInsn(cst);
@@ -70,8 +77,8 @@ public final class ASMParserPatcher implements IClassTransformer
                     };
                 }
             }, 0);
-            LOGGER.info("Rewriting class bytes...");
-            return cw.toByteArray();
+            LOGGER.info("{} was {}", transformedName, patched.get() ? "patched!" : "not patched :(");
+            return patched.get() ? cw.toByteArray() : basicClass;
         }
         return basicClass;
     }

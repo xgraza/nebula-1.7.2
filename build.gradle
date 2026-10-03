@@ -98,9 +98,8 @@ afterEvaluate {
     }
 
     tasks.withType(JavaExec).configureEach {
-        jvmArgs "-Dfml.coreMods.load=ez.nebula.client.forge.NebulaMixinLoadingPlugin"
+        jvmArgs "-Dfml.coreMods.load=ez.nebula.client.forge.NebulaFMLCoreModPlugin"
         jvmArgs "-Dfml.ignoreModNames=true"
-        args "--tweakClass", "org.spongepowered.asm.launch.MixinTweaker"
     }
 }
 
@@ -143,15 +142,10 @@ tasks.withType(Jar).configureEach {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest.attributes(
             'FMLCorePluginContainsFMLMod': true,
-            'FMLCorePlugin': 'ez.nebula.client.forge.NebulaMixinLoadingPlugin',
-            // 'ForceLoadAsMod': true,
-            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'FMLCorePlugin': 'ez.nebula.client.forge.NebulaFMLCoreModPlugin',
+            'ForceLoadAsMod': true,
+            'MainClass': 'ez.nebula.client.installer.NebulaForgeInstallerMain'
             // 'FMLAT': 'nebula_AT.cfg',
-
-            'Nebula-Version': project.version,
-            'Nebula-BuildID': buildNumber,
-            'Nebula-Branch': gitBranch,
-            'Nebula-Hash': gitHash
     )
 }
 

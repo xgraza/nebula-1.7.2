@@ -1,4 +1,4 @@
-package ez.nebula.client.mixin.impl.mp.entity;
+package ez.nebula.client.mixin.impl.entity;
 
 import ez.nebula.client.api.listener.EventBus;
 import ez.nebula.client.api.listener.event.game.EventPostUpdate;

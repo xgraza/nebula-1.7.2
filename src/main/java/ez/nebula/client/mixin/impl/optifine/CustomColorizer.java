@@ -1,4 +1,4 @@
-package ez.nebula.client.mixin.impl.render;
+package ez.nebula.client.mixin.impl.optifine;
 
 import ez.nebula.client.api.listener.EventBus;
 import ez.nebula.client.api.listener.event.render.EventGamma;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * Optifine
  */
 @Pseudo
-@Mixin(targets = {"net.minecraft.src.CustomColorizer"}, remap = false)
+@Mixin(targets = {"CustomColorizer"}, remap = false)
 public final class CustomColorizer
 {
     @Redirect(method = "updateLightmap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;gammaSetting:F", opcode = Opcodes.GETFIELD))

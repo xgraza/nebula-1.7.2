@@ -26,7 +26,7 @@ public class OptifineHelper
     {
         try
         {
-            OPTIFINE_CLASS = Class.forName("net.minecraft.src.Config");
+            OPTIFINE_CLASS = Class.forName("Config");
         } catch (Exception ignored)
         {
         }

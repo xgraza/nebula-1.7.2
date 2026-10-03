@@ -40,7 +40,7 @@ public abstract class EntityRendererMixin implements IEntityRenderer
 
     @Shadow private Minecraft mc;
 
-    @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/client/ForgeHooksClient;dispatchRenderLast(Lnet/minecraft/client/renderer/RenderGlobal;F)V", shift = At.Shift.AFTER, remap = false))
+    @Inject(method = "renderWorld", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=hand", shift = At.Shift.BEFORE))
     private void hook$renderWorld(float v, long p_78471_1_, CallbackInfo ci)
     {
         final Minecraft mc = Minecraft.getMinecraft();

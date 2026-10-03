@@ -135,7 +135,7 @@ public abstract class RenderItemMixin implements IRenderItem
         // intentionally no-op
     }
 
-    @Inject(method = "renderItemAndEffectIntoGUI", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemIntoGUI(Lnet/minecraft/client/gui/FontRenderer;Lnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/item/ItemStack;IIZ)V", shift = At.Shift.AFTER), remap = false)
+    @Inject(method = "renderItemAndEffectIntoGUI", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemIntoGUI(Lnet/minecraft/client/gui/FontRenderer;Lnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/item/ItemStack;IIZ)V", shift = At.Shift.AFTER))
     private void hook$renderItemAndEffectIntoGUI$afterRender(FontRenderer fontRenderer, TextureManager p_82406_1_, ItemStack par1FontRenderer, int p_82406_2_, int par2TextureManager, CallbackInfo ci)
     {
         if (par1FontRenderer.isItemEnchanted())
