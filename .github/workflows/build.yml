@@ -31,7 +31,7 @@ jobs:
       - name: "Upload artifact to GitHub actions"
         uses: actions/upload-artifact@v7
         with:
-          path: "build/libs/Nebula-4.0.0.jar"
+          path: "build/libs/nebula-forge-4.0.0.jar"
           if-no-files-found: error
           retention-days: 30
           archive: false
