@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(Chunk.class)
 public class ChunkMixin
 {
-    @Inject(method = "removeTileEntity", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    @Inject(method = "removeTileEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/TileEntity;invalidate()V"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     private void hook$removeTileEntity(int x, int y, int z, CallbackInfo info, ChunkPosition pos, TileEntity te)
     {
         EventBus.dispatch(new EventRemoveTileEntity(te, x, y, z));

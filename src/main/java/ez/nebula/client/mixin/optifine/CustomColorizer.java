@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 /**
  * @author xgraza
  * @since 9/28/26
- * Optifine
  */
 @Pseudo
 @Mixin(targets = {"CustomColorizer"}, remap = false)
