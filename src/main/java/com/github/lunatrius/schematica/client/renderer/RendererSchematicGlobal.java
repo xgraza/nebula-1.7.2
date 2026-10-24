@@ -10,6 +10,7 @@ import ez.nebula.client.api.listener.event.render.EventRender3D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.culling.Frustrum;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.util.EnumFacing;
@@ -30,7 +31,7 @@ public class RendererSchematicGlobal
     @Subscribe
     private final EventListener<EventRender3D> render3DEventListener = event ->
     {
-        EntityPlayerSP player = this.minecraft.thePlayer;
+        EntityLivingBase player = this.minecraft.renderViewEntity;
         if (player != null)
         {
             this.settings.playerPosition.x = (float) (player.lastTickPosX + (player.posX - player.lastTickPosX) * event.getPartialTicks());
@@ -52,7 +53,7 @@ public class RendererSchematicGlobal
         }
     };
 
-    private EnumFacing getOrientation(EntityPlayer player)
+    private EnumFacing getOrientation(EntityLivingBase player)
     {
         if (player.rotationPitch > 45)
         {

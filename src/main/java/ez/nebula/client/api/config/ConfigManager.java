@@ -2,6 +2,7 @@ package ez.nebula.client.api.config;
 
 import ez.nebula.client.api.manager.IManager;
 import ez.nebula.client.impl.config.ClientSettingConfig;
+import ez.nebula.client.impl.config.ModuleConfig;
 import ez.nebula.client.util.io.FileUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +33,13 @@ public final class ConfigManager implements IManager
         } catch (final IOException e)
         {
             LOGGER.error("Failed to load configs!", e);
+        }
+        try
+        {
+            ModuleConfig.loadConfig("default");
+        } catch (final IOException e)
+        {
+            LOGGER.error("Failed to load default module config!", e);
         }
     }
 

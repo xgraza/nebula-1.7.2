@@ -168,13 +168,6 @@ public final class ModuleManager implements ITypedManager<Module>
         register(new ScaffoldModule());
         register(new StashHunterModule());
 
-        try
-        {
-            ModuleConfig.loadConfig("default");
-        } catch (final IOException e)
-        {
-            LOGGER.error("Failed to load default module config!", e);
-        }
         LOGGER.info("Registered {} modules", moduleInstanceList.size());
     }
 
